@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Budget Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    /* Ensure nav links are black */
+    .nav-wrapper.white a, .nav-wrapper.white .brand-logo {
+      color: #000 !important;
+    }
+    /* Highlight active page */
+    .nav-wrapper.white .active a {
+      font-weight: bold;
+      border-bottom: 2px solid #000;
+    }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 0.5em; border: 1px solid #ccc; }
+    /* Custom card styling: white background, rounded corners, darker shadow */
+    .card {
+      background-color: #ffffff !important;
+      border-radius: 8px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+    /* Ensure status chip aligns right in card header */
+    .card .card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    /* Darker shadow for chips */
+    .chip {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+    }
+    /* Action chips styling: white background, black text, darker shadow */
+    .chip-action {
+      background-color: #ffffff !important;
+      color: #000 !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+      font-weight: 600 !important;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      border: none !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      height: 32px !important;
+      line-height: 32px !important;
+      padding: 0 16px !important;
+      border-radius: 16px !important;
+      text-transform: none !important;
+      text-decoration: none !important;
+      vertical-align: middle !important;
+    }
+    .chip-action:hover {
+      background-color: #f2f2f2 !important;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6) !important;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper white">
+      <a href="{{ url_for('index') }}" class="brand-logo" style="padding-left: 1em;">Budget Dashboard</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li class="{% if request.endpoint=='index' %}active{% endif %}"><a href="{{ url_for('index') }}">Home</a></li>
+        <li class="{% if request.endpoint=='trends' %}active{% endif %}"><a href="{{ url_for('trends') }}">Spending Trends</a></li>
+        <li class="{% if request.endpoint=='manage_presets' %}active{% endif %}"><a href="{{ url_for('manage_presets') }}">Manage Presets</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="divider"></div>
+  {% block content %}{% endblock %}
+  <div class="divider" style="margin-top:2em;"></div>
+  <footer class="page-footer grey lighten-4" style="padding: 10px 20px;">
+    <div class="container">
+      <span class="grey-text text-darken-2">© 2025 Budget Dashboard</span>
+    </div>
+  </footer>
+  <!-- Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

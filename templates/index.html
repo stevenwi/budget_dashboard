@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h1>Budget Dashboard</h1>
+  <!-- Add New Month on its own row -->
+  <div class="row">
+    <div class="col s12 m6 l4">
+      <div class="card z-depth-3">
+        <div class="card-content">
+          <h5 style="display:flex; align-items:center;">
+            Add New Month
+            <div class="chip teal lighten-2 white-text" style="margin-left:8px; font-weight:600;">New</div>
+          </h5>
+          <form id="new-month-form">
+            <div class="input-field">
+              <input id="new_month" type="text" placeholder="YYYY-MM" required>
+            </div>
+            <button type="submit" class="btn">Create</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly budget cards with pagination -->
+  <div class="row" id="month-cards">
+    {% for item in months %}
+    <div class="col s12 m6 l4 month-card">
+      <div class="card z-depth-3">
+        <div class="card-content">
+          <span class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>{{ item.month }}</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="chip blue lighten-4 black-text">Earnings: ${{ "%.2f"|format(item.earnings) }}</div>
+              {% if item.status == 'under' %}
+              <div class="chip teal lighten-2 white-text">Under Budget</div>
+              {% else %}
+              <div class="chip red white-text">Over Budget</div>
+              {% endif %}
+            </div>
+          </span>
+          <div style="display: flex; justify-content: space-between;">
+            <p><strong>Budget:</strong> ${{ "%.2f"|format(item.budget_total) }}</p>
+            <p><strong>Earnings:</strong> ${{ "%.2f"|format(item.earnings) }}</p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0;">
+            <span><strong>${{ "%.2f"|format(item.budget_total) }}</strong></span>
+            <i class="material-icons">remove</i>
+            <span><strong>${{ "%.2f"|format(item.spent_total) }}</strong></span>
+            <i class="material-icons">drag_handle</i>
+            <span><strong>${{ "%.2f"|format(item.diff) }}</strong></span>
+          </div>
+        </div>
+        <div class="card-action">
+          <a href="{{ url_for('view_budget', month=item.month) }}" class="chip chip-action">View</a>
+          <a href="{{ url_for('edit_budget', month=item.month) }}" class="chip chip-action">Edit</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination controls -->
+  <div class="row center-align">
+    <a id="prev-page" class="btn-floating btn-small waves-effect waves-light">
+      <i class="material-icons">chevron_left</i>
+    </a>
+    <span id="page-info" style="margin: 0 1em;"></span>
+    <a id="next-page" class="btn-floating btn-small waves-effect waves-light">
+      <i class="material-icons">chevron_right</i>
+    </a>
+  </div>
+</div>
+
+<script>
+// Handle new month redirect
+document.getElementById('new-month-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var month = document.getElementById('new_month').value;
+  if (month) {
+    window.location.href = '{{ url_for("edit_budget", month="") }}' + month;
+  }
+});
+
+// Pagination logic
+document.addEventListener('DOMContentLoaded', function() {
+  const cards = Array.from(document.querySelectorAll('.month-card'));
+  const pageSize = 3;  // Show 3 month cards per page
+  const totalPages = Math.ceil(cards.length / pageSize);
+  let currentPage = 1;
+
+  function showPage(page) {
+    cards.forEach((card, idx) => {
+      const pageIndex = Math.floor(idx / pageSize) + 1;
+      card.style.display = (pageIndex === page) ? '' : 'none';
+    });
+    document.getElementById('page-info').textContent = `Page ${page} of ${totalPages}`;
+  }
+
+  document.getElementById('prev-page').addEventListener('click', function() {
+    if (currentPage > 1) {
+      currentPage--;
+      showPage(currentPage);
+    }
+  });
+  document.getElementById('next-page').addEventListener('click', function() {
+    if (currentPage < totalPages) {
+      currentPage++;
+      showPage(currentPage);
+    }
+  });
+
+  // Initial display
+  showPage(currentPage);
+});
+</script>
+{% endblock %}

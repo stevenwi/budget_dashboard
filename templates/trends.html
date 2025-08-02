@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 style="display:flex; align-items:center;">
+  Spending Trends
+  <div class="chip grey lighten-2 black-text" style="margin-left:8px; font-weight:600;">Trends</div>
+</h1>
+
+<div style="width: 800px; height: 400px;">
+  <canvas id="trendsChart"></canvas>
+</div>
+
+<script>
+const ctx = document.getElementById('trendsChart').getContext('2d');
+const months = {{ months|safe }};
+const data = {{ data|safe }};
+
+const colors = {
+  'Shopping': 'rgb(255, 99, 132)',
+  'Utilities': 'rgb(54, 162, 235)', 
+  'Home': 'rgb(255, 205, 86)',
+  'Earnings': 'rgb(75, 192, 192)'
+};
+
+const datasets = Object.keys(data).map(category => ({
+  label: category,
+  data: data[category],
+  borderColor: colors[category],
+  backgroundColor: colors[category] + '40',
+  tension: 0.1
+}));
+
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: datasets
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Amount ($)'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Month'
+        }
+      }
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: 'Monthly Spending by Category'
+      }
+    }
+  }
+});
+</script>
+
+<p style="margin-top: 2em;">
+  <a href="{{ url_for('index') }}">Back to Home</a>
+</p>
+{% endblock %}

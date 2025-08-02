@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 style="display: flex; align-items: center;">
+  Budget vs Spending for {{ month }}
+  <div class="chip grey lighten-2 black-text" style="margin-left: 8px; font-weight: 600;">View Budget</div>
+</h1>
+
+<div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0;">
+  <span><strong>${{ "%.2f"|format(total_budget) }}</strong></span>
+  <i class="material-icons">remove</i>
+  <span><strong>${{ "%.2f"|format(total_spent) }}</strong></span>
+  <i class="material-icons">drag_handle</i>
+  <span><strong>${{ "%.2f"|format(total_diff) }}</strong></span>
+</div>
+
+{% if not budget %}
+<p>No budget defined for this month. <a href="{{ url_for('edit_budget', month=month) }}">Create one</a>?</p>
+{% else %}
+
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Subcategory</th>
+      <th>Budget</th>
+      <th>Actual</th>
+      <th>Difference</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cat, subs in budget.items() %}
+      {% for sub, budget_amt in subs.items() %}
+        {% set actual_amt = spent[cat][sub] %}
+        {% set diff = budget_amt - actual_amt %}
+        <tr>
+          <td>{{ cat }}</td>
+          <td>{{ sub }}</td>
+          <td>${{ "%.2f"|format(budget_amt) }}</td>
+          <td>${{ "%.2f"|format(actual_amt) }}</td>
+          <td>${{ "%.2f"|format(diff) }}</td>
+          <td>
+            {% if diff >= 0 %}
+              <span style="color: green;">✓ Under budget</span>
+            {% else %}
+              <span style="color: red;">⚠ Over budget</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
+
+<div style="margin-top: 2em; display: flex; gap: 1em;">
+  <a href="{{ url_for('edit_budget', month=month) }}" class="chip chip-action">Edit Budget</a>
+  <a href="{{ url_for('index') }}" class="chip chip-action">Home</a>
+</div>
+
+{% endif %}
+{% endblock %}

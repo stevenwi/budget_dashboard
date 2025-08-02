@@ -1,0 +1,10 @@
+{
+    "Shopping": {},
+    "Utilities": {
+        "water": 150.0
+    },
+    "Home": {
+        "Mortgage": 1200.0,
+        "Life Insurance": 200.0
+    }
+}

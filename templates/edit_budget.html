@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Edit Budget for {{ month }}</h1>
+<form method="post">
+  {% for cat in ['Shopping', 'Utilities', 'Home', 'Earnings'] %}
+    {% set subs = budget.get(cat, {}) %}
+    <fieldset>
+      <legend>{{ cat }}</legend>
+      {% if subs %}
+        <table>
+          <tr><th>Subcategory</th><th>Amount</th></tr>
+          {% for sub, amt in subs.items() %}
+          <tr>
+            <td>{{ sub }}</td>
+            <td>
+              <input name="{{cat}}__{{sub}}" value="{{amt}}">
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+      <p>Add / edit subcategory:</p>
+      <div id="{{cat}}-inputs">
+        <input placeholder="Name" class="sub-name">
+        <input placeholder="Amount" class="sub-amt">
+        <button type="button" class="chip chip-action" onclick="addField('{{cat}}')">Add</button>
+      </div>
+    </fieldset>
+    <hr>
+  {% endfor %}
+  <button type="submit" class="chip chip-action">Save Budget</button>
+</form>
+
+<script>
+function addField(category) {
+  let container = document.getElementById(category + '-inputs');
+  let nameInput = container.querySelector('.sub-name');
+  let amtInput = container.querySelector('.sub-amt');
+  
+  if (nameInput.value.trim() && amtInput.value.trim()) {
+    // Create hidden inputs for the form
+    let form = container.closest('form');
+    let hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = category + '__' + nameInput.value.trim();
+    hiddenInput.value = amtInput.value.trim();
+    form.appendChild(hiddenInput);
+    
+    // Add to the display table
+    let table = container.parentElement.querySelector('table');
+    if (!table) {
+      table = document.createElement('table');
+      table.innerHTML = '<tr><th>Subcategory</th><th>Amount</th></tr>';
+      container.parentElement.insertBefore(table, container);
+    }
+    
+    let row = table.insertRow();
+    row.insertCell(0).textContent = nameInput.value.trim();
+    row.insertCell(1).innerHTML = '<input name="' + category + '__' + nameInput.value.trim() + '" value="' + amtInput.value.trim() + '">';
+    
+    // Clear inputs
+    nameInput.value = '';
+    amtInput.value = '';
+  }
+}
+</script>
+{% endblock %}
