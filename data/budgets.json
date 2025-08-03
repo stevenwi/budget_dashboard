@@ -24,5 +24,27 @@
         "Earnings": {
             "Paycheck": 10000.0
         }
+    },
+    "2025-09": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Mortgage": 1200.0,
+            "Life Insurance": 200.0
+        },
+        "Earnings": {}
+    },
+    "2025-10": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Mortgage": 1200.0,
+            "Life Insurance": 200.0
+        },
+        "Earnings": {}
     }
 }
