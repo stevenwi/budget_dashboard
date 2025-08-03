@@ -468,11 +468,19 @@ class PresetsManager extends HTMLElement {
     this.loadPresets();
     this.setupEventListeners();
     
-    // Initialize components with a longer delay to ensure DOM is ready
-    setTimeout(() => {
-      this.initializeMaterializeComponents();
-      this.setupModalEventListeners(); // Setup modal listeners after DOM is ready
-    }, 500);
+    // Initialize components as soon as required DOM elements are available
+    const waitForDomAndInit = () => {
+      // Check for required elements in shadowRoot
+      const selectInput = this.shadowRoot.getElementById('category');
+      const dropdown = this.shadowRoot.getElementById('category-dropdown');
+      if (selectInput && dropdown) {
+        this.initializeMaterializeComponents();
+        this.setupModalEventListeners(); // Setup modal listeners after DOM is ready
+      } else {
+        requestAnimationFrame(waitForDomAndInit);
+      }
+    };
+    waitForDomAndInit();
   }
 
   initializeMaterializeComponents() {
