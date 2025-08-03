@@ -999,9 +999,9 @@ class PresetsManager extends HTMLElement {
         const category = btn.getAttribute('data-category');
         const subcategory = btn.getAttribute('data-subcategory');
         
-        if (confirm(`Remove preset for ${category} - ${subcategory}?`)) {
+        this.showConfirmDialog(`Remove preset for ${category} - ${subcategory}?`, async () => {
           await this.removePreset(category, subcategory);
-        }
+        });
       });
     });
   }
@@ -1016,12 +1016,12 @@ class PresetsManager extends HTMLElement {
     const amount = amountInput?.value;
 
     if (!category || !subcategory || !amount) {
-      alert('Please fill in all fields');
+      this.showToast('Please fill in all fields', 'red');
       return;
     }
 
     if (isNaN(amount) || parseFloat(amount) <= 0) {
-      alert('Please enter a valid positive amount');
+      this.showToast('Please enter a valid positive amount', 'red');
       return;
     }
 
@@ -1054,13 +1054,13 @@ class PresetsManager extends HTMLElement {
         this.closeModal();
         
         // Show success message
-        alert('Preset added successfully!');
+        this.showToast('Preset added successfully!', 'teal');
       } else {
-        alert('Error adding preset: ' + (result.error || 'Unknown error'));
+        this.showToast('Error adding preset: ' + (result.error || 'Unknown error'), 'red');
       }
     } catch (error) {
       console.error('Error adding preset:', error);
-      alert('Error adding preset: ' + error.message);
+      this.showToast('Error adding preset: ' + error.message, 'red');
     }
   }
 
@@ -1071,12 +1071,12 @@ class PresetsManager extends HTMLElement {
     const amount = this.shadowRoot.getElementById('amount').value;
 
     if (!category || !subcategory || !amount) {
-      alert('Please fill in all fields');
+      this.showToast('Please fill in all fields', 'red');
       return;
     }
 
     if (isNaN(amount) || parseFloat(amount) <= 0) {
-      alert('Please enter a valid positive amount');
+      this.showToast('Please enter a valid positive amount', 'red');
       return;
     }
 
@@ -1109,13 +1109,13 @@ class PresetsManager extends HTMLElement {
         this.closeModal();
         
         // Show success message
-        alert('Preset added successfully!');
+        this.showToast('Preset added successfully!', 'teal');
       } else {
-        alert('Error adding preset: ' + (result.error || 'Unknown error'));
+        this.showToast('Error adding preset: ' + (result.error || 'Unknown error'), 'red');
       }
     } catch (error) {
       console.error('Error adding preset:', error);
-      alert('Error adding preset: ' + error.message);
+      this.showToast('Error adding preset: ' + error.message, 'red');
     }
   }
 
@@ -1137,13 +1137,116 @@ class PresetsManager extends HTMLElement {
       if (result.success) {
         // Reload presets
         await this.loadPresets();
+        this.showToast('Preset removed successfully!', 'teal');
       } else {
-        alert('Error removing preset: ' + (result.error || 'Unknown error'));
+        this.showToast('Error removing preset: ' + (result.error || 'Unknown error'), 'red');
       }
     } catch (error) {
       console.error('Error removing preset:', error);
-      alert('Error removing preset');
+      this.showToast('Error removing preset', 'red');
     }
+  }
+  
+  showToast(message, colorClass = 'teal') {
+    // Create toast element with Material Design styling
+    const toast = document.createElement('div');
+    toast.innerHTML = `
+      <div style="
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: ${colorClass === 'red' ? '#f44336' : '#26a69a'};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 4px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        z-index: 10000;
+        font-size: 14px;
+        min-width: 288px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      ">${message}</div>
+    `;
+    
+    document.body.appendChild(toast);
+    const toastElement = toast.firstElementChild;
+    
+    // Animate in
+    setTimeout(() => {
+      toastElement.style.opacity = '1';
+    }, 10);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      toastElement.style.opacity = '0';
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 300);
+    }, 3000);
+  }
+  
+  showConfirmDialog(message, onConfirm) {
+    // Create Material Design confirmation dialog
+    const dialogHTML = `
+      <div id="confirm-dialog" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+        <div style="
+          background: white;
+          border-radius: 8px;
+          padding: 24px;
+          width: 90%;
+          max-width: 400px;
+          position: relative;
+          box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12), 0 11px 15px -7px rgba(0,0,0,0.2);
+        ">
+          <h5 style="margin: 0 0 16px 0; color: #333;">Confirm Action</h5>
+          <p style="margin: 0 0 24px 0; color: #666;">${message}</p>
+          
+          <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button type="button" id="cancel-confirm" class="btn-flat waves-effect waves-teal">Cancel</button>
+            <button type="button" id="confirm-action" class="btn waves-effect waves-light red">
+              <i class="material-icons left">delete</i>Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Create dialog element and add to document body
+    const dialogElement = document.createElement('div');
+    dialogElement.innerHTML = dialogHTML;
+    document.body.appendChild(dialogElement);
+    
+    // Add event listeners
+    const closeDialog = () => {
+      document.body.removeChild(dialogElement);
+    };
+    
+    dialogElement.querySelector('#cancel-confirm').addEventListener('click', closeDialog);
+    dialogElement.querySelector('#confirm-dialog').addEventListener('click', (e) => {
+      if (e.target.id === 'confirm-dialog') {
+        closeDialog();
+      }
+    });
+    
+    dialogElement.querySelector('#confirm-action').addEventListener('click', () => {
+      onConfirm();
+      closeDialog();
+    });
   }
 }
 customElements.define('presets-manager', PresetsManager);
