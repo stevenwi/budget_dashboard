@@ -1,0 +1,113 @@
+<!-- Shell app HTML for micro frontend architecture using Web Components -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Budget Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Each script defines a custom element for a micro frontend -->
+    <script src="/bundles/dashboard-home.js"></script>
+    <script src="/bundles/budgets-list.js"></script>
+    <script src="/bundles/transactions-table.js"></script>
+    <script src="/bundles/recurring-manager.js"></script>
+    <script src="/bundles/presets-manager.js"></script>
+    <script src="/bundles/trends-view.js"></script>
+    <style>
+      body { font-family: sans-serif; margin: 2em; }
+      .nav-wrapper.white a, .nav-wrapper.white .brand-logo {
+        color: #000 !important;
+      }
+      .nav-wrapper.white .active a {
+        font-weight: bold;
+        border-bottom: 2px solid #000;
+      }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { padding: 0.5em; border: 1px solid #ccc; }
+      .card {
+        background-color: #ffffff !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+      .card .card-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .chip {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+      }
+      .chip-action {
+        background-color: #ffffff !important;
+        color: #000 !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6) !important;
+        font-weight: 600 !important;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+        border: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 32px !important;
+        line-height: 32px !important;
+        padding: 0 16px !important;
+        border-radius: 16px !important;
+        text-transform: none !important;
+        text-decoration: none !important;
+        vertical-align: middle !important;
+      }
+      .chip-action:hover {
+        background-color: #f2f2f2 !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6) !important;
+      }
+      .divider { margin: 2em 0; }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-wrapper white">
+        <a href="#" class="brand-logo" style="padding-left: 1em;" onclick="navigate('dashboard')">Budget Dashboard</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li id="nav-dashboard"><a href="#" onclick="navigate('dashboard')">Home</a></li>
+          <li id="nav-trends"><a href="#" onclick="navigate('trends')">Spending Trends</a></li>
+          <li id="nav-presets"><a href="#" onclick="navigate('presets')">Manage Presets</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="divider"></div>
+    <div id="micro-frontend-root"></div>
+    <div class="divider" style="margin-top:2em;"></div>
+    <footer class="page-footer grey lighten-4" style="padding: 10px 20px;">
+      <div class="container">
+        <span class="grey-text text-darken-2">© 2025 Budget Dashboard</span>
+      </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      const microFrontends = {
+        dashboard: 'dashboard-home',
+        budgets: 'budgets-list',
+        transactions: 'transactions-table',
+        recurring: 'recurring-manager',
+        presets: 'presets-manager',
+        trends: 'trends-view'
+      };
+      function setActiveNav(section) {
+        document.querySelectorAll('#nav-mobile li').forEach(li => li.classList.remove('active'));
+        if (section === 'dashboard') document.getElementById('nav-dashboard').classList.add('active');
+        if (section === 'trends') document.getElementById('nav-trends').classList.add('active');
+        if (section === 'presets') document.getElementById('nav-presets').classList.add('active');
+      }
+      function navigate(section) {
+        const root = document.getElementById('micro-frontend-root');
+        root.innerHTML = '';
+        const el = document.createElement(microFrontends[section]);
+        root.appendChild(el);
+        setActiveNav(section);
+      }
+      // Default to dashboard
+      navigate('dashboard');
+    </script>
+  </body>
+</html>
