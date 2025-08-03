@@ -144,9 +144,10 @@ class EditBudget extends HTMLElement {
             const tr = document.createElement('tr');
             tr.innerHTML = `<td>${nameInput.value}</td><td><input name="${cat}__${nameInput.value}" value="${amtInput.value}" /></td>`;
             table.appendChild(tr);
+            const subcategoryName = nameInput.value;
             nameInput.value = '';
             amtInput.value = '';
-            this.showToast(`${nameInput.value} added to ${cat}`, 'teal');
+            this.showToast(`${subcategoryName} added to ${cat}`, 'teal');
           } else {
             this.showToast('Please enter both name and amount', 'red');
           }
