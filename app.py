@@ -1,3 +1,6 @@
+# API endpoints for web components (edit/view budget)
+from flask import make_response
+
 import os, json, csv
 from datetime import datetime
 from collections import defaultdict
@@ -41,6 +44,16 @@ def micro_frontend_shell():
 def bundles(filename):
     return send_from_directory(os.path.join(os.getcwd(), 'bundles'), filename)
 
+# Serve css directory for stylesheets
+@app.route('/css/<path:filename>')
+def css(filename):
+    return send_from_directory(os.path.join(os.getcwd(), 'css'), filename)
+
+# Serve js directory for JavaScript files
+@app.route('/js/<path:filename>')
+def js(filename):
+    return send_from_directory(os.path.join(os.getcwd(), 'js'), filename)
+
 @app.route('/api/months')
 def months():
     # Get month summaries with budget and spending totals
@@ -64,6 +77,28 @@ def months():
             'status': status
         })
     return jsonify(month_summaries)
+
+
+@app.route('/api/edit_budget/<month>', methods=['GET', 'POST'])
+def api_edit_budget(month):
+    if request.method == 'POST':
+        form = request.form
+        new_budget = {'Shopping':{}, 'Utilities':{}, 'Home':{}, 'Earnings':{}}
+        for key, val in form.items():
+            if key.count('__') != 1:
+                # Skip malformed keys
+                continue
+            cat, sub = key.split('__')
+            if val.strip():
+                new_budget.setdefault(cat, {})[sub] = float(val)
+        budget_manager.set_budget(month, new_budget)
+        return make_response(jsonify({'success': True}), 200)
+    # GET: return current budget
+    budget = budget_manager.ensure_month_budget(month)
+    return jsonify({'month': month, 'budget': budget})
+
+
+
 
 @app.route('/edit/<month>', methods=['GET','POST'])
 def edit_budget(month):
@@ -146,7 +181,30 @@ def add_preset():
         except ValueError:
             pass  # Invalid amount, ignore
     
+
     return redirect(url_for('manage_presets'))
+
+# API endpoint for view budget (JSON for web component)
+@app.route('/api/view_budget/<month>')
+def api_view_budget(month):
+    budget = budget_manager.get_budget(month)
+    txns = load_transactions()
+    spent = defaultdict(lambda: defaultdict(float))
+    total_spent = 0.0
+    for t in txns:
+        if t['month'] == month:
+            spent[t['category']][t['sub']] += t['amount']
+            total_spent += t['amount']
+    total_budget = sum(v for subs in budget.values() for v in subs.values())
+    total_diff = total_budget - total_spent
+    return jsonify({
+        'month': month,
+        'budget': budget,
+        'spent': spent,
+        'total_budget': total_budget,
+        'total_spent': total_spent,
+        'total_diff': total_diff
+    })
 
 @app.route('/presets/remove', methods=['POST'])
 def remove_preset():

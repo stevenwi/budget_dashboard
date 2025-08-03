@@ -2,10 +2,11 @@ class DashboardHome extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({mode: 'open'});
-    this.shadowRoot.innerHTML = `
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-      <style>
+    
+    // Create shared stylesheet for chip actions
+    if (!window.sharedChipStyles) {
+      window.sharedChipStyles = new CSSStyleSheet();
+      window.sharedChipStyles.replaceSync(`
         .chip-action {
           background: #fff !important;
           color: #000 !important;
@@ -31,7 +32,15 @@ class DashboardHome extends HTMLElement {
           box-shadow: 0 4px 12px rgba(0,0,0,0.28) !important;
           transform: translateY(-2px) scale(1.04);
         }
-      </style>
+      `);
+    }
+    
+    // Use constructed stylesheet for custom styles
+    this.shadowRoot.adoptedStyleSheets = [window.sharedChipStyles];
+    
+    this.shadowRoot.innerHTML = `
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
       <div class="container">
         <h1>Budget Dashboard</h1>
         <div class="row">
@@ -112,17 +121,32 @@ class DashboardHome extends HTMLElement {
                 </div>
               </div>
               <div class="card-action">
-                <a href="/view/${item.month}" class="chip chip-action">View</a>
-                <a href="/edit/${item.month}" class="chip chip-action">Edit</a>
+                <a href="#" class="chip chip-action" data-action="view" data-month="${item.month}">View</a>
+                <a href="#" class="chip chip-action" data-action="edit" data-month="${item.month}">Edit</a>
               </div>
             </div>
           `;
           row.appendChild(col);
         });
         cardsContainer.appendChild(row);
+        // Add event listeners for View/Edit chips
+        row.querySelectorAll('.chip-action').forEach(btn => {
+          btn.addEventListener('click', e => {
+            e.preventDefault();
+            const month = btn.getAttribute('data-month');
+            const action = btn.getAttribute('data-action');
+            if (window.navigate) {
+              if (action === 'view') {
+                window.navigate('viewBudget', month);
+              } else if (action === 'edit') {
+                window.navigate('editBudget', month);
+              }
+            }
+          });
+        });
         // Pagination logic
         const cards = Array.from(row.querySelectorAll('.month-card'));
-        const pageSize = 3;
+        const pageSize = DASHBOARD_PAGE_SIZE;
         const totalPages = Math.ceil(cards.length / pageSize);
         let currentPage = 1;
         const pageInfo = this.shadowRoot.getElementById('page-info');
