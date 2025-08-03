@@ -455,43 +455,24 @@ class PresetsManager extends HTMLElement {
     
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     
-    // Initialize Materialize select in the modal using MutationObserver
-    const initializeSelect = () => {
+    // Initialize Materialize select in the modal
+    setTimeout(() => {
       const selectElement = document.getElementById('category-modal');
       if (selectElement && window.M) {
         window.M.FormSelect.init(selectElement);
-        return true;
       }
-      return false;
-    };
-
-    if (!initializeSelect()) {
-      const observer = new MutationObserver((mutations, obs) => {
-        if (initializeSelect()) {
-          obs.disconnect();
-        }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
+    }, 100);
   }
 
   connectedCallback() {
     this.loadPresets();
     this.setupEventListeners();
     
-    // Initialize components as soon as required DOM elements are available
-    const waitForDomAndInit = () => {
-      // Check for required elements in shadowRoot
-      const selectInput = this.shadowRoot.getElementById('category');
-      const dropdown = this.shadowRoot.getElementById('category-dropdown');
-      if (selectInput && dropdown) {
-        this.initializeMaterializeComponents();
-        this.setupModalEventListeners(); // Setup modal listeners after DOM is ready
-      } else {
-        requestAnimationFrame(waitForDomAndInit);
-      }
-    };
-    waitForDomAndInit();
+    // Initialize components with a longer delay to ensure DOM is ready
+    setTimeout(() => {
+      this.initializeMaterializeComponents();
+      this.setupModalEventListeners(); // Setup modal listeners after DOM is ready
+    }, 500);
   }
 
   initializeMaterializeComponents() {
