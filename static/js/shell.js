@@ -1,4 +1,7 @@
-// ...existing code...
+// Global configuration
+const DASHBOARD_PAGE_SIZE = 6; // Number of budget cards per page
+
+// Micro frontend mapping
 const microFrontends = {
   dashboard: 'dashboard-home',
   budgets: 'budgets-list',

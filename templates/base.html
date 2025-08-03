@@ -67,9 +67,9 @@
 <body>
   <nav>
     <div class="nav-wrapper white">
-      <a href="{{ url_for('index') }}" class="brand-logo" style="padding-left: 1em;">Budget Dashboard</a>
+      <a href="{{ url_for('micro_frontend_shell') }}" class="brand-logo" style="padding-left: 1em;">Budget Dashboard</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li class="{% if request.endpoint=='index' %}active{% endif %}"><a href="{{ url_for('index') }}">Home</a></li>
+        <li class="{% if request.endpoint=='micro_frontend_shell' %}active{% endif %}"><a href="{{ url_for('micro_frontend_shell') }}">Home</a></li>
         <li class="{% if request.endpoint=='trends' %}active{% endif %}"><a href="{{ url_for('trends') }}">Spending Trends</a></li>
         <li class="{% if request.endpoint=='manage_presets' %}active{% endif %}"><a href="{{ url_for('manage_presets') }}">Manage Presets</a></li>
       </ul>

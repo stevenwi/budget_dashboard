@@ -5,6 +5,7 @@
     },
     "Home": {
         "Mortgage": 1200.0,
-        "Life Insurance": 200.0
+        "Life Insurance": 200.0,
+        "electric": 150.0
     }
 }
