@@ -100,6 +100,25 @@ def api_edit_budget(month):
 
 
 
+
+@app.route('/api/edit_budget/<month>', methods=['GET', 'POST'])
+def api_edit_budget(month):
+    if request.method == 'POST':
+        form = request.form
+        new_budget = {'Shopping':{}, 'Utilities':{}, 'Home':{}, 'Earnings':{}}
+        for key, val in form.items():
+            cat, sub = key.split('__')
+            if val.strip():
+                new_budget.setdefault(cat, {})[sub] = float(val)
+        budget_manager.set_budget(month, new_budget)
+        return make_response(jsonify({'success': True}), 200)
+    # GET: return current budget
+    budget = budget_manager.ensure_month_budget(month)
+    return jsonify({'month': month, 'budget': budget})
+
+
+
+
 @app.route('/edit/<month>', methods=['GET','POST'])
 def edit_budget(month):
     # Ensure month has a budget (with presets if new)
