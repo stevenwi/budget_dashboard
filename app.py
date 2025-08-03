@@ -12,7 +12,7 @@ DATA_DIR = 'data'
 BUDGET_FILE = os.path.join(DATA_DIR, 'budgets.json')
 TXN_FILE    = os.path.join(DATA_DIR, 'transactions.csv')
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # Initialize managers
 recurring_manager = RecurringManager(os.path.join(DATA_DIR, 'recurring.json'))
@@ -37,22 +37,7 @@ def load_transactions():
 
 @app.route('/')
 def micro_frontend_shell():
-    return send_from_directory(os.getcwd(), 'micro-frontend-shell.html')
-
-# Serve bundles directory for web components
-@app.route('/bundles/<path:filename>')
-def bundles(filename):
-    return send_from_directory(os.path.join(os.getcwd(), 'bundles'), filename)
-
-# Serve css directory for stylesheets
-@app.route('/css/<path:filename>')
-def css(filename):
-    return send_from_directory(os.path.join(os.getcwd(), 'css'), filename)
-
-# Serve js directory for JavaScript files
-@app.route('/js/<path:filename>')
-def js(filename):
-    return send_from_directory(os.path.join(os.getcwd(), 'js'), filename)
+    return send_from_directory('static', 'micro-frontend-shell.html')
 
 @app.route('/api/months')
 def months():
@@ -96,8 +81,6 @@ def api_edit_budget(month):
     # GET: return current budget
     budget = budget_manager.ensure_month_budget(month)
     return jsonify({'month': month, 'budget': budget})
-
-
 
 
 @app.route('/edit/<month>', methods=['GET','POST'])

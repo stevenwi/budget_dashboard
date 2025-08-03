@@ -5,24 +5,6 @@ class EditBudget extends HTMLElement {
     this.month = null;
     this.data = null;
     this.error = null;
-    
-    // Ensure shared styles are applied when available
-    this.setupSharedStyles();
-  }
-
-  setupSharedStyles() {
-    if (window.sharedChipStyles) {
-      this.shadowRoot.adoptedStyleSheets = [window.sharedChipStyles];
-    } else {
-      // If not yet available, wait for the 'sharedChipStylesReady' event
-      const onStylesReady = () => {
-        if (window.sharedChipStyles) {
-          this.shadowRoot.adoptedStyleSheets = [window.sharedChipStyles];
-          window.removeEventListener('sharedChipStylesReady', onStylesReady);
-        }
-      };
-      window.addEventListener('sharedChipStylesReady', onStylesReady);
-    }
   }
 
   static get observedAttributes() {
@@ -72,6 +54,10 @@ class EditBudget extends HTMLElement {
     let html = `
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      <link rel="stylesheet" href="/static/css/shell.css">
+      <style>
+        /* Other component-specific styles can remain here if needed */
+      </style>
       <div class="container">
         <div class="row">
           <div class="col s12 m8 offset-m2">
@@ -108,9 +94,6 @@ class EditBudget extends HTMLElement {
       </div>
     `;
     this.shadowRoot.innerHTML = html;
-    
-    // Reapply shared styles after content render
-    this.setupSharedStyles();
     this.addEventListeners();
   }
 
