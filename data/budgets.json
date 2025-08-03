@@ -82,5 +82,37 @@
             "electric": 150.0
         },
         "Earnings": {}
+    },
+    "2025-02": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0,
+            "electric": 150.0
+        },
+        "Earnings": {}
+    },
+    "2025-03": {
+        "Shopping": {},
+        "Utilities": {},
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0,
+            "electric": 150.0
+        },
+        "Earnings": {}
+    },
+    "2025-04": {
+        "Shopping": {},
+        "Utilities": {},
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0,
+            "electric": 150.0
+        },
+        "Earnings": {}
     }
 }
