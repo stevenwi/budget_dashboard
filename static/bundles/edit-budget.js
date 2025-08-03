@@ -36,6 +36,7 @@ class EditBudget extends HTMLElement {
       this.render();
     } catch (err) {
       this.error = err;
+      this.showToast('Failed to load budget data. Please try again.', 'red');
       this.renderError();
     }
   }
@@ -109,10 +110,11 @@ class EditBudget extends HTMLElement {
             body: formData
           });
           if (!res.ok) throw new Error('Failed to save budget');
+          this.showToast('Budget saved successfully!', 'teal');
           this.fetchData(); // reload after save
         } catch (err) {
+          this.showToast('Failed to save budget. Please try again.', 'red');
           this.error = err;
-          this.renderError();
         }
       };
     }
@@ -125,10 +127,17 @@ class EditBudget extends HTMLElement {
           const nameInput = container.querySelector('.sub-name');
           const amtInput = container.querySelector('.sub-amt');
           if (nameInput.value.trim() && amtInput.value.trim()) {
+            // Validate amount is a number
+            const amount = parseFloat(amtInput.value);
+            if (isNaN(amount)) {
+              this.showToast('Please enter a valid amount', 'red');
+              return;
+            }
             // Add new input row to the table
             let table = container.parentElement.querySelector('table');
             if (!table) {
               table = document.createElement('table');
+              table.className = 'highlight responsive-table';
               table.innerHTML = '<tr><th>Subcategory</th><th>Amount</th></tr>';
               container.parentElement.insertBefore(table, container);
             }
@@ -137,10 +146,55 @@ class EditBudget extends HTMLElement {
             table.appendChild(tr);
             nameInput.value = '';
             amtInput.value = '';
+            this.showToast(`${nameInput.value} added to ${cat}`, 'teal');
+          } else {
+            this.showToast('Please enter both name and amount', 'red');
           }
         };
       }
     }
+  }
+  
+  showToast(message, colorClass = 'teal') {
+    // Create toast element with Material Design styling
+    const toast = document.createElement('div');
+    toast.innerHTML = `
+      <div style="
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: ${colorClass === 'red' ? '#f44336' : '#26a69a'};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 4px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        z-index: 10000;
+        font-size: 14px;
+        min-width: 288px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      ">${message}</div>
+    `;
+    
+    document.body.appendChild(toast);
+    const toastElement = toast.firstElementChild;
+    
+    // Animate in
+    setTimeout(() => {
+      toastElement.style.opacity = '1';
+    }, 10);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      toastElement.style.opacity = '0';
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 300);
+    }, 3000);
   }
 }
 customElements.define('edit-budget', EditBudget);

@@ -165,8 +165,55 @@ class DashboardHome extends HTMLElement {
           window.location.href = `/edit/${selectedMonth}`;
         }
         closeModal();
+        // Show success toast
+        this.showToast('Budget created successfully!', 'teal');
+      } else {
+        // Show error toast instead of alert
+        this.showToast('Please select a month', 'red');
       }
     });
+  }
+  
+  showToast(message, colorClass = 'teal') {
+    // Create toast element with Material Design styling
+    const toast = document.createElement('div');
+    toast.innerHTML = `
+      <div style="
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: ${colorClass === 'red' ? '#f44336' : '#26a69a'};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 4px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        z-index: 10000;
+        font-size: 14px;
+        min-width: 288px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      ">${message}</div>
+    `;
+    
+    document.body.appendChild(toast);
+    const toastElement = toast.firstElementChild;
+    
+    // Animate in
+    setTimeout(() => {
+      toastElement.style.opacity = '1';
+    }, 10);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      toastElement.style.opacity = '0';
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 300);
+    }, 3000);
   }
   
   renderDashboard() {
