@@ -79,7 +79,10 @@ class DashboardHome extends HTMLElement {
 
   renderDashboard() {
     fetch('/api/months')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch data');
+        return res.json();
+      })
       .then(months => {
         const cardsContainer = this.shadowRoot.getElementById('month-cards');
         cardsContainer.innerHTML = '';
@@ -140,6 +143,11 @@ class DashboardHome extends HTMLElement {
           if (currentPage < totalPages) { currentPage++; showPage(currentPage); }
         };
         showPage(currentPage);
+      })
+      .catch(err => {
+        const cardsContainer = this.shadowRoot.getElementById('month-cards');
+        cardsContainer.innerHTML = '<p style="color: red;">Failed to load data. Please try again later.</p>';
+        console.error(err);
       });
   }
 }
