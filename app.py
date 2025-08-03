@@ -36,10 +36,21 @@ def load_transactions():
 def micro_frontend_shell():
     return send_from_directory(os.getcwd(), 'micro-frontend-shell.html')
 
+
 # Serve bundles directory for web components
 @app.route('/bundles/<path:filename>')
 def bundles(filename):
     return send_from_directory(os.path.join(os.getcwd(), 'bundles'), filename)
+
+# Serve shell CSS
+@app.route('/css/<path:filename>')
+def shell_css(filename):
+    return send_from_directory(os.path.join(os.getcwd(), 'css'), filename)
+
+# Serve shell JS
+@app.route('/js/<path:filename>')
+def shell_js(filename):
+    return send_from_directory(os.path.join(os.getcwd(), 'js'), filename)
 
 @app.route('/api/months')
 def months():
