@@ -42,22 +42,11 @@ class DashboardHome extends HTMLElement {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
       <div class="container">
-        <h1>Budget Dashboard</h1>
-        <div class="row">
-          <div class="col s12 m6 l4">
-            <div class="card z-depth-3">
-              <div class="card-content">
-                <h5 style="display:flex; align-items:center;">
-                  Add New Month
-                  <div class="chip teal lighten-2 white-text" style="margin-left:8px; font-weight:600;">New</div>
-                </h5>
-                <form id="new-month-form">
-                  <div class="input-field">
-                    <input id="new_month" type="text" placeholder="YYYY-MM" required>
-                  </div>
-                  <button type="submit" class="btn">Create</button>
-                </form>
-              </div>
+        <div class="row" style="margin-bottom: 0;">
+          <div class="col s12" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0;">
+            <h1 style="margin: 0;">Budget Dashboard</h1>
+            <div class="chip teal lighten-2 white-text chip-action" id="add-month-chip" style="cursor: pointer; font-weight: 600;">
+              <i class="material-icons left" style="margin-right: 8px;">add</i>Add New Month
             </div>
           </div>
         </div>
@@ -76,16 +65,110 @@ class DashboardHome extends HTMLElement {
   }
   connectedCallback() {
     this.renderDashboard();
-    // Always re-bind the new month form event
-    this.shadowRoot.getElementById('new-month-form').addEventListener('submit', e => {
+    this.bindEvents();
+  }
+  
+  bindEvents() {
+    // Add click handler for the Add New Month chip
+    this.shadowRoot.getElementById('add-month-chip').addEventListener('click', () => {
+      this.openAddMonthModal();
+    });
+  }
+  
+  openAddMonthModal() {
+    // Create modal HTML
+    const modalHTML = `
+      <div id="add-month-modal" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+        <div style="
+          background: white;
+          border-radius: 8px;
+          padding: 24px;
+          width: 90%;
+          max-width: 400px;
+          position: relative;
+          box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12), 0 11px 15px -7px rgba(0,0,0,0.2);
+        ">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+            <h5 style="margin: 0; color: #26a69a;">Add New Month</h5>
+            <i class="material-icons" id="close-modal" style="cursor: pointer; color: #757575; font-size: 24px;">close</i>
+          </div>
+          
+          <form id="add-month-form">
+            <div class="input-field">
+              <input type="month" id="month-picker" class="browser-default" required style="
+                padding: 8px 0;
+                border: none;
+                border-bottom: 1px solid #9e9e9e;
+                background: transparent;
+                font-size: 1rem;
+                width: 100%;
+                outline: none;
+                margin-bottom: 8px;
+              ">
+              <label for="month-picker" style="position: absolute; top: -20px; font-size: 12px; color: #26a69a;">Select Month</label>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px;">
+              <button type="button" id="cancel-btn" class="btn-flat waves-effect waves-teal">Cancel</button>
+              <button type="submit" class="btn waves-effect waves-light teal">
+                <i class="material-icons left">add</i>Create
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+    
+    // Create modal element and add to document body (outside Shadow DOM)
+    const modalElement = document.createElement('div');
+    modalElement.innerHTML = modalHTML;
+    document.body.appendChild(modalElement);
+    
+    // Set default month to current month
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const monthPicker = modalElement.querySelector('#month-picker');
+    monthPicker.value = currentMonth;
+    
+    // Add event listeners
+    const closeModal = () => {
+      document.body.removeChild(modalElement);
+    };
+    
+    modalElement.querySelector('#close-modal').addEventListener('click', closeModal);
+    modalElement.querySelector('#cancel-btn').addEventListener('click', closeModal);
+    modalElement.querySelector('#add-month-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'add-month-modal') {
+        closeModal();
+      }
+    });
+    
+    modalElement.querySelector('#add-month-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      const month = this.shadowRoot.getElementById('new_month').value;
-      if (month) {
-        window.location.href = `/edit_budget/${month}`;
+      const selectedMonth = monthPicker.value;
+      if (selectedMonth) {
+        // Use micro-frontend navigation
+        if (window.navigate) {
+          window.navigate('editBudget', selectedMonth);
+        } else {
+          window.location.href = `/edit/${selectedMonth}`;
+        }
+        closeModal();
       }
     });
   }
-
+  
   renderDashboard() {
     fetch('/api/months')
       .then(res => res.json())
@@ -146,23 +229,39 @@ class DashboardHome extends HTMLElement {
         });
         // Pagination logic
         const cards = Array.from(row.querySelectorAll('.month-card'));
-        const pageSize = DASHBOARD_PAGE_SIZE;
+        const pageSize = window.DASHBOARD_PAGE_SIZE || 6; // Fallback to 6 if not defined
         const totalPages = Math.ceil(cards.length / pageSize);
         let currentPage = 1;
         const pageInfo = this.shadowRoot.getElementById('page-info');
+        const prevBtn = this.shadowRoot.getElementById('prev-page');
+        const nextBtn = this.shadowRoot.getElementById('next-page');
+        
         const showPage = (page) => {
           cards.forEach((card, idx) => {
             const pageIndex = Math.floor(idx / pageSize) + 1;
             card.style.display = (pageIndex === page) ? '' : 'none';
           });
-          pageInfo.textContent = 'Page ' + page + ' of ' + totalPages;
+          pageInfo.textContent = totalPages > 0 ? `Page ${page} of ${totalPages}` : 'No months yet';
+          
+          // Show/hide pagination controls based on total pages
+          if (totalPages <= 1) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+          } else {
+            prevBtn.style.display = '';
+            nextBtn.style.display = '';
+            prevBtn.style.opacity = currentPage > 1 ? '1' : '0.3';
+            nextBtn.style.opacity = currentPage < totalPages ? '1' : '0.3';
+          }
         };
-        this.shadowRoot.getElementById('prev-page').onclick = () => {
+        
+        prevBtn.onclick = () => {
           if (currentPage > 1) { currentPage--; showPage(currentPage); }
         };
-        this.shadowRoot.getElementById('next-page').onclick = () => {
+        nextBtn.onclick = () => {
           if (currentPage < totalPages) { currentPage++; showPage(currentPage); }
         };
+        
         showPage(currentPage);
       });
   }

@@ -14,6 +14,17 @@ TXN_FILE    = os.path.join(DATA_DIR, 'transactions.csv')
 
 app = Flask(__name__, static_folder='static')
 
+# Add cache-busting headers for development
+@app.after_request
+def add_header(response):
+    response.cache_control.no_cache = True
+    response.cache_control.no_store = True
+    response.cache_control.must_revalidate = True
+    response.cache_control.max_age = 0
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 # Initialize managers
 recurring_manager = RecurringManager(os.path.join(DATA_DIR, 'recurring.json'))
 budget_manager = BudgetManager(BUDGET_FILE, recurring_manager)
@@ -199,6 +210,64 @@ def remove_preset():
         recurring_manager.remove_preset(category, subcategory)
     
     return redirect(url_for('manage_presets'))
+
+# API endpoints for micro-frontend components
+@app.route('/api/trends')
+def api_trends():
+    """Get trends data for chart visualization"""
+    months = sorted({t['month'] for t in load_transactions()})
+    cats = ['Shopping','Utilities','Home','Earnings']
+    data = {cat: [] for cat in cats}
+
+    txns = load_transactions()
+    for m in months:
+        monthly = defaultdict(float)
+        for t in txns:
+            if t['month'] == m:
+                monthly[t['category']] += t['amount']
+        for cat in cats:
+            data[cat].append(monthly.get(cat, 0.0))
+
+    return jsonify({
+        'months': months,
+        'data': data
+    })
+
+@app.route('/api/presets')
+def api_presets():
+    """Get current presets for management interface"""
+    presets = recurring_manager.list_presets()
+    return jsonify({'presets': presets})
+
+@app.route('/api/presets/add', methods=['POST'])
+def api_add_preset():
+    """Add a new recurring preset via API"""
+    data = request.get_json()
+    category = data.get('category')
+    subcategory = data.get('subcategory')
+    amount = data.get('amount')
+    
+    if category and subcategory and amount:
+        try:
+            recurring_manager.add_preset(category, subcategory, float(amount))
+            return jsonify({'success': True})
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid amount'})
+    
+    return jsonify({'success': False, 'error': 'Missing required fields'})
+
+@app.route('/api/presets/remove', methods=['POST'])
+def api_remove_preset():
+    """Remove a recurring preset via API"""
+    data = request.get_json()
+    category = data.get('category')
+    subcategory = data.get('subcategory')
+    
+    if category and subcategory:
+        recurring_manager.remove_preset(category, subcategory)
+        return jsonify({'success': True})
+    
+    return jsonify({'success': False, 'error': 'Missing required fields'})
 
 if __name__ == '__main__':
     os.makedirs(DATA_DIR, exist_ok=True)
