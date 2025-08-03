@@ -455,13 +455,24 @@ class PresetsManager extends HTMLElement {
     
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     
-    // Initialize Materialize select in the modal
-    setTimeout(() => {
+    // Initialize Materialize select in the modal using MutationObserver
+    const initializeSelect = () => {
       const selectElement = document.getElementById('category-modal');
       if (selectElement && window.M) {
         window.M.FormSelect.init(selectElement);
+        return true;
       }
-    }, 100);
+      return false;
+    };
+
+    if (!initializeSelect()) {
+      const observer = new MutationObserver((mutations, obs) => {
+        if (initializeSelect()) {
+          obs.disconnect();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
   }
 
   connectedCallback() {
