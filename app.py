@@ -1,7 +1,7 @@
 import os, json, csv
 from datetime import datetime
 from collections import defaultdict
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory
 from budget_app import BudgetManager
 from recurringmanager import RecurringManager
 
@@ -31,8 +31,18 @@ def load_transactions():
             })
     return txns
 
+
 @app.route('/')
-def index():
+def micro_frontend_shell():
+    return send_from_directory(os.getcwd(), 'micro-frontend-shell.html')
+
+# Serve bundles directory for web components
+@app.route('/bundles/<path:filename>')
+def bundles(filename):
+    return send_from_directory(os.path.join(os.getcwd(), 'bundles'), filename)
+
+@app.route('/api/months')
+def months():
     # Get month summaries with budget and spending totals
     months = budget_manager.get_months()  # now ascending order
     txns = load_transactions()
@@ -53,7 +63,7 @@ def index():
             'diff': diff,
             'status': status
         })
-    return render_template('index.html', months=month_summaries)
+    return jsonify(month_summaries)
 
 @app.route('/edit/<month>', methods=['GET','POST'])
 def edit_budget(month):
