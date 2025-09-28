@@ -1,0 +1,16 @@
+/* Import external libraries globally */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
+
+/* Global styles for Stencil POC */
+body {
+  font-family: Arial, sans-serif;
+  margin: 2em;
+}
+h1 {
+  color: #26a69a;
+}
+.container {
+  max-width: 800px;
+  margin: auto;
+}

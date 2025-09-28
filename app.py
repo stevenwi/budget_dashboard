@@ -1,7 +1,7 @@
 # API endpoints for web components (edit/view budget)
 from flask import make_response
 
-import os, json, csv
+import os, json, csv, logging
 from datetime import datetime
 from collections import defaultdict
 from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory
@@ -14,7 +14,23 @@ TXN_FILE    = os.path.join(DATA_DIR, 'transactions.csv')
 
 app = Flask(__name__, static_folder='static')
 
-# Add cache-busting headers for development
+# Configure logging to show request details
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+# Enable Flask's request logging
+@app.before_request
+def log_request_info():
+    app.logger.info('Request: %s %s', request.method, request.url)
+
+@app.after_request
+def log_response_info(response):
+    app.logger.info('Response: %s %s', response.status_code, request.url)
+    return response
+
+# Add cache-busting headers and CORS for development
 @app.after_request
 def add_header(response):
     response.cache_control.no_cache = True
@@ -23,6 +39,18 @@ def add_header(response):
     response.cache_control.max_age = 0
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
+
+    # Add CORS headers for development (StencilJS and Angular)
+    origin = request.headers.get('Origin')
+    allowed_origins = ['http://localhost:3333', 'http://localhost:4200']
+
+    if origin in allowed_origins:
+        response.headers['Access-Control-Allow-Origin'] = origin
+
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+
     return response
 
 # Initialize managers
