@@ -1,0 +1,17 @@
+h2 {
+  color: #26a69a;
+  margin-bottom: 1em;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+th, td {
+  border: 1px solid #e0e0e0;
+  padding: 0.5em 1em;
+  text-align: left;
+}
+th {
+  background: #f5f5f5;
+}
