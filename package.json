@@ -1,9 +1,10 @@
 {
-  "name": "angular-app",
+  "name": "budget-dashboard",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:api": "cd src/api && python3 app.py",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -28,7 +29,7 @@
     "@angular/forms": "^20.3.0",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
-    "budget-components": "file:../poc",
+    "budget-components": "file:./poc",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

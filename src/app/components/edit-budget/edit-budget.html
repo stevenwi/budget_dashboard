@@ -1,0 +1,180 @@
+<div class="container">
+  <div class="row" style="margin-bottom: 0; align-items: center;">
+    <div class="col s12" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0; min-height: auto;">
+      <h1 style="margin: 0; line-height: 1.2;">Edit Budget for {{ month }}</h1>
+      <div class="chip teal lighten-2 white-text" style="font-weight: 600;">Edit Budget</div>
+    </div>
+  </div>
+
+  <!-- Header Actions Card -->
+  <div #headerActions class="card z-depth-3" style="margin-bottom: 1.5rem;">
+    <div class="card-action">
+      <button
+        type="button"
+        class="btn teal"
+        (click)="saveBudget()"
+        [disabled]="saving">
+        <i class="material-icons left">save</i>
+        {{ saving ? 'Saving...' : 'Save Budget' }}
+      </button>
+      <a (click)="goHome()" class="chip chip-action" style="cursor: pointer;">
+        <i class="material-icons left">home</i>Home
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="card z-depth-3">
+    <div class="card-content">Loading budget...</div>
+  </div>
+
+  <div *ngIf="error" class="card red lighten-4 z-depth-3">
+    <div class="card-content">
+      <span class="red-text">{{ error }}</span>
+    </div>
+  </div>
+
+  <form *ngIf="!loading && !error" (ngSubmit)="saveBudget()">
+    <div *ngFor="let category of categories" class="card z-depth-3" style="margin-bottom: 1.5rem;">
+
+      <!-- Collapsed Card - Summary View -->
+      <div
+        *ngIf="!expandedCategories[category]"
+        class="card-content category-summary-card"
+        (click)="toggleCategory(category)"
+        style="cursor: pointer; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="card-title" style="margin-bottom: 8px; display: block;">{{ category }}</span>
+            <div style="color: rgba(0,0,0,0.6); font-size: 14px;">
+              <span *ngIf="getCategorySubcategoryCount(category) > 0">
+                {{ getCategorySubcategoryCount(category) }} subcategories • ${{ getCategoryTotal(category).toFixed(2) }}
+              </span>
+              <span *ngIf="getCategorySubcategoryCount(category) === 0">
+                No subcategories • Click to add
+              </span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="chip teal lighten-4 black-text" style="font-weight: 500;">
+              ${{ getCategoryTotal(category).toFixed(2) }}
+            </div>
+            <i class="material-icons" style="color: rgba(0,0,0,0.6);">expand_more</i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expanded Card - Full Edit View -->
+      <div *ngIf="expandedCategories[category]" class="card-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <span class="card-title">{{ category }}</span>
+          <button
+            type="button"
+            class="btn-flat"
+            (click)="toggleCategory(category)"
+            style="min-width: auto; padding: 0 8px;">
+            <i class="material-icons">expand_less</i>
+          </button>
+        </div>
+
+        <div *ngIf="getSubcategories(category).length > 0" style="margin-bottom: 2rem;">
+          <table>
+            <thead>
+              <tr>
+                <th>Subcategory</th>
+                <th>Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let sub of getSubcategories(category)">
+                <td>{{ sub.name }}</td>
+                <td>
+                  <div class="input-field">
+                    <input
+                      type="number"
+                      step="0.01"
+                      [value]="sub.amount"
+                      (input)="updateSubcategoryAmount(category, sub.name, $event)"
+                      (blur)="onInputChange($event)"
+                      [class.has-value]="sub.amount && sub.amount > 0">
+                    <label>Amount ($)</label>
+                  </div>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="remove-btn"
+                    (click)="removeSubcategory(category, sub.name)"
+                    title="Remove subcategory">
+                    <i class="material-icons">delete</i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h5>Add New Subcategory</h5>
+          <div class="row" style="align-items: flex-end;">
+            <div class="col s12 m5">
+              <div class="input-field">
+                <input
+                  type="text"
+                  [(ngModel)]="newSubcategory[category].name"
+                  name="name-{{category}}"
+                  (input)="onInputChange($event)"
+                  (blur)="onInputChange($event)"
+                  [class.has-value]="newSubcategory[category].name && newSubcategory[category].name.trim().length > 0">
+                <label>Subcategory Name</label>
+              </div>
+            </div>
+            <div class="col s12 m5">
+              <div class="input-field">
+                <input
+                  type="number"
+                  step="0.01"
+                  [(ngModel)]="newSubcategory[category].amount"
+                  name="amount-{{category}}"
+                  (input)="onInputChange($event)"
+                  (blur)="onInputChange($event)"
+                  [class.has-value]="newSubcategory[category].amount && newSubcategory[category].amount.trim().length > 0">
+                <label>Amount ($)</label>
+              </div>
+            </div>
+            <div class="col s12 m2" style="display: flex; align-items: flex-end; padding-bottom: 16px;">
+              <button
+                type="button"
+                class="btn teal"
+                (click)="addSubcategory(category)">
+                <i class="material-icons left">add</i>Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- Footer Action Bar -->
+  <div
+    class="footer-action-bar card z-depth-3"
+    [class.visible]="showFloatingActions"
+    *ngIf="!loading && !error"
+    style="margin-top: 2rem;">
+    <div class="card-action">
+      <button
+        type="button"
+        class="btn teal"
+        (click)="saveBudget()"
+        [disabled]="saving">
+        <i class="material-icons left">save</i>
+        {{ saving ? 'Saving...' : 'Save Budget' }}
+      </button>
+      <a (click)="goHome()" class="chip chip-action" style="cursor: pointer;">
+        <i class="material-icons left">home</i>Home
+      </a>
+    </div>
+  </div>
+</div>

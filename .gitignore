@@ -36,9 +36,9 @@ poc/.stencil/
 poc/package-lock.json
 
 # Angular Build Artifacts
-angular-app/dist/
-angular-app/.angular/
-angular-app/package-lock.json
+dist/
+.angular/
+package-lock.json
 
 # IDE and Editor files
 *.swp
