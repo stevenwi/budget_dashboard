@@ -56,12 +56,8 @@ export class DashboardHome {
   async handleAddMonth(event: Event) {
     event.preventDefault();
     if (this.selectedMonth) {
-      // Navigate to edit budget for new month
-      if (window.navigate) {
-        window.navigate('editBudget', this.selectedMonth);
-      } else {
-        window.location.href = `/edit/${this.selectedMonth}`;
-      }
+      // Navigate to edit budget for new month using Angular Router
+      window.location.href = `/edit-budget/${this.selectedMonth}`;
       this.closeModal();
       this.showToast('Budget created successfully!', 'success');
     } else {
@@ -113,15 +109,6 @@ export class DashboardHome {
     }, 3000);
   }
 
-  handleAction(action: 'view' | 'edit', month: string) {
-    if (window.navigate) {
-      if (action === 'view') {
-        window.navigate('viewBudget', month);
-      } else if (action === 'edit') {
-        window.navigate('editBudget', month);
-      }
-    }
-  }
 
   get totalPages() {
     return Math.ceil(this.months.length / this.pageSize);
@@ -189,8 +176,8 @@ export class DashboardHome {
                   </div>
                 </div>
                 <div class="card-action">
-                  <a href="#" class="chip chip-action" onClick={(e) => { e.preventDefault(); this.handleAction('view', item.month); }}>View</a>
-                  <a href="#" class="chip chip-action" onClick={(e) => { e.preventDefault(); this.handleAction('edit', item.month); }}>Edit</a>
+                  <a href={`/view-budget/${item.month}`} class="chip chip-action">View</a>
+                  <a href={`/edit-budget/${item.month}`} class="chip chip-action">Edit</a>
                 </div>
               </div>
             </div>

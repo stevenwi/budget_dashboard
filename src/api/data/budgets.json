@@ -1,0 +1,122 @@
+{
+    "2025-08": {
+        "Shopping": {
+            "kroger": 50.0,
+            "publix": 20.0
+        },
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0
+        },
+        "Earnings": {}
+    },
+    "2025-07": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Mortgage": 1200.0,
+            "Life Insurance": 200.0
+        },
+        "Earnings": {
+            "Paycheck": 10000.0
+        }
+    },
+    "2025-09": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Mortgage": 1200.0,
+            "Life Insurance": 200.0
+        },
+        "Earnings": {}
+    },
+    "2025-10": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Mortgage": 1200.0,
+            "Life Insurance": 200.0
+        },
+        "Earnings": {}
+    },
+    "2025-11": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0
+        },
+        "Earnings": {}
+    },
+    "2025-12": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0,
+            "electric": 150.0
+        },
+        "Earnings": {}
+    },
+    "2025-01": {
+        "Shopping": {
+            "kroger": 1324.0
+        },
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0,
+            "electric": 150.0
+        },
+        "Earnings": {
+            "check": 4000.0
+        }
+    },
+    "2025-02": {
+        "Shopping": {},
+        "Utilities": {
+            "water": 150.0
+        },
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0,
+            "electric": 150.0
+        },
+        "Earnings": {}
+    },
+    "2025-03": {
+        "Shopping": {},
+        "Utilities": {},
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0,
+            "electric": 150.0
+        },
+        "Earnings": {}
+    },
+    "2025-04": {
+        "Shopping": {},
+        "Utilities": {},
+        "Home": {
+            "Life Insurance": 200.0,
+            "Mortgage": 1200.0,
+            "electric": 150.0
+        },
+        "Earnings": {}
+    }
+}
