@@ -4,51 +4,64 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Running the Application
+### Running the Angular Application
 ```bash
-python app.py
+npm start
 ```
-- Starts Flask development server on localhost:5000
-- Debug mode is enabled by default
-- Creates `data/` directory and `budgets.json` if they don't exist
+- Starts Angular development server on localhost:4200
+- Hot reload enabled for development
+
+### Running the API Backend
+```bash
+npm run start:api
+```
+- Starts Flask API server on localhost:5000
+- Provides API endpoints for the Angular/Stencil components
+- Creates `src/api/data/` directory and `budgets.json` if they don't exist
+
+### Building Stencil Components
+```bash
+cd poc && npm run build
+```
+- Builds the Stencil web components library
+- Required before running Angular app if components are modified
 
 ### Dependencies
 ```bash
-pip install -r requirements.txt
+npm install                           # Install Angular dependencies
+pip install -r src/api/requirements.txt  # Install Flask API dependencies
 ```
-- Install Flask==2.3.2 and python-dotenv==1.0.0
 
 ### Testing
-No formal test framework is configured. Test by running the application and using the web interface.
+- Angular: `npm test`
+- No formal test framework configured for API. Test by running both servers and using the web interface.
 
 ## Architecture Overview
 
-This is a **micro frontend budget dashboard** built with Flask backend and vanilla JavaScript web components frontend. The application follows the micro frontend pattern described in `micro-frontend-architecture.md`.
+This is an **Angular budget dashboard** that integrates with Stencil web components and a Flask API backend. The application has been reorganized from the original micro-frontend pattern to a proper Angular application structure.
 
 ### Core Architecture Components
 
-#### Backend (Flask)
-- **`app.py`** - Main Flask application with API endpoints and traditional routes
-- **`budget_app.py`** - Core budget management logic (BudgetManager, TransactionManager, Analyzer classes)
-- **`recurringmanager.py`** - Manages recurring budget presets
+#### Frontend (Angular + Stencil)
+- **`src/app/`** - Angular application components
+- **`src/main.ts`** - Angular bootstrap file
+- **`src/index.html`** - Main HTML entry point
+- **`poc/src/components/`** - Stencil web components:
+  - `dashboard-home.tsx` - Main dashboard view
+  - Other reusable components for budget management
 
-#### Frontend (Micro Frontend Shell)
-- **`static/micro-frontend-shell.html`** - Main shell application that loads and orchestrates micro frontends
-- **`static/js/shell.js`** - Navigation logic and micro frontend routing
-- **`static/bundles/*.js`** - Individual micro frontend components as web components:
-  - `dashboard-home.js` - Main dashboard view
-  - `budgets-list.js` - List of budget months
-  - `edit-budget.js` - Budget editing interface
-  - `view-budget.js` - Budget viewing with spending comparisons
-  - `trends-view.js` - Spending trends visualization
-  - `presets-manager.js` - Recurring preset management
-  - `transactions-table.js` - Transaction display
-  - `recurring-manager.js` - Recurring budget management
+#### Backend (Flask API)
+- **`src/api/app.py`** - Main Flask application with API endpoints
+- **`src/api/budget_app.py`** - Core budget management logic (BudgetManager, TransactionManager, Analyzer classes)
+- **`src/api/recurringmanager.py`** - Manages recurring budget presets
 
 #### Data Layer
-- **`data/budgets.json`** - Monthly budget data storage
-- **`data/recurring.json`** - Recurring budget preset templates
-- **`data/transactions.csv`** - Transaction data for analysis
+- **`src/api/data/budgets.json`** - Monthly budget data storage
+- **`src/api/data/recurring.json`** - Recurring budget preset templates
+- **`src/api/data/transactions.csv`** - Transaction data for analysis
+
+#### Legacy/Reference
+- **`deprecated/`** - Original micro-frontend implementation files for reference
 
 ### Key Architectural Patterns
 
@@ -94,16 +107,22 @@ The system uses four fixed categories:
 
 ### File Organization
 ```
-├── app.py                    # Main Flask application
-├── budget_app.py             # Core business logic
-├── recurringmanager.py       # Preset management
-├── data/                     # JSON/CSV data storage
-├── static/
-│   ├── micro-frontend-shell.html  # Main shell app
-│   ├── js/shell.js          # Navigation & routing
-│   ├── bundles/             # Micro frontend components
-│   └── css/                 # Shared styles
-└── templates/               # Traditional Jinja templates
+├── src/                      # Main source directory
+│   ├── app/                  # Angular application
+│   ├── api/                  # Flask API backend
+│   │   ├── app.py           # Main Flask application
+│   │   ├── budget_app.py    # Core business logic
+│   │   ├── recurringmanager.py # Preset management
+│   │   └── data/            # JSON/CSV data storage
+│   ├── index.html           # Angular main HTML
+│   ├── main.ts              # Angular bootstrap
+│   └── styles.css           # Global styles
+├── poc/                     # Stencil components library
+│   └── src/components/      # Reusable web components
+├── deprecated/              # Original micro-frontend files
+├── package.json             # Angular dependencies & scripts
+├── angular.json             # Angular CLI configuration
+└── tsconfig.*.json          # TypeScript configurations
 ```
 
 ### Cache Management
