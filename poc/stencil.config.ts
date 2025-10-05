@@ -16,7 +16,8 @@ export const config: Config = {
       customElementsExportBehavior: 'auto-define-custom-elements',
     },
   ],
-  globalStyle: 'src/global/app.css',
+  // globalStyle removed - Material Icons and Materialize CSS are loaded in Angular index.html
+  // Shadow DOM components cannot use @import rules in global styles
   devServer: {
     reloadStrategy: 'pageReload',
     port: 3333,

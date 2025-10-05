@@ -42,7 +42,12 @@ def add_header(response):
 
     # Add CORS headers for development (StencilJS and Angular)
     origin = request.headers.get('Origin')
-    allowed_origins = ['http://localhost:3333', 'http://localhost:4200']
+    allowed_origins = [
+        'http://localhost:3333',
+        'http://localhost:4200',
+        'http://budget.local:4200',
+        'http://192.168.151.108:4200'
+    ]
 
     if origin in allowed_origins:
         response.headers['Access-Control-Allow-Origin'] = origin
@@ -311,4 +316,5 @@ if __name__ == '__main__':
     # ensure budgets.json exists
     if not os.path.exists(BUDGET_FILE):
         with open(BUDGET_FILE,'w') as f: json.dump({},f)
-    app.run(debug=True)
+    # Bind to local network only (not 0.0.0.0 for security)
+    app.run(debug=True, host='192.168.151.108')

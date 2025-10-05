@@ -134,6 +134,18 @@
             "Mortgage": 1200,
             "electric": 150
         },
+        "Shopping": {
+            "123": 123
+        },
+        "Utilities": {}
+    },
+    "2026-02": {
+        "Earnings": {},
+        "Home": {
+            "Life Insurance": 200,
+            "Mortgage": 1200,
+            "electric": 150
+        },
         "Shopping": {},
         "Utilities": {}
     }

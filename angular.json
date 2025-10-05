@@ -54,6 +54,10 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "host": "192.168.151.108",
+            "allowedHosts": ["budget.local", "localhost", "192.168.151.108"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "budget-dashboard:build:production"
