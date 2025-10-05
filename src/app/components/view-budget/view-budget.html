@@ -1,8 +1,20 @@
 <div class="container">
-  <div class="row" style="margin-bottom: 0; align-items: center;">
-    <div class="col s12" style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0; min-height: auto;">
-      <h1 style="margin: 0; line-height: 1.2;">Budget vs Spending for {{ month }}</h1>
-      <div class="chip grey lighten-2 black-text" style="font-weight: 600; align-self: center;">View Budget</div>
+  <div class="row header-row">
+    <div class="col s12 header-col">
+      <h1 class="header-title">Budget vs Spending for {{ month }}</h1>
+      <div class="chip grey lighten-2 black-text header-badge">View Budget</div>
+    </div>
+  </div>
+
+  <!-- Header Actions Card -->
+  <div #headerActions class="card z-depth-3 action-card" *ngIf="!loading && !error">
+    <div class="card-action">
+      <a (click)="editBudget()" class="chip chip-action clickable">
+        <i class="material-icons left">edit</i>Edit Budget
+      </a>
+      <a (click)="goHome()" class="chip chip-action clickable">
+        <i class="material-icons left">home</i>Home
+      </a>
     </div>
   </div>
 
@@ -17,10 +29,10 @@
   </div>
 
   <div *ngIf="budgetData && !loading && !error">
-    <div class="card z-depth-3" style="margin-bottom: 2rem;">
+    <div class="card z-depth-3 summary-card">
       <div class="card-content">
         <span class="card-title">Budget Summary</span>
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0;">
+        <div class="summary-math">
           <span><strong>${{ budgetData.total_budget.toFixed(2) }}</strong></span>
           <i class="material-icons">remove</i>
           <span><strong>${{ budgetData.total_spent.toFixed(2) }}</strong></span>
@@ -32,7 +44,7 @@
 
     <div *ngIf="hasNoBudgetData()" class="card z-depth-3">
       <div class="card-content">
-        <p>No budget defined for this month. <a (click)="editBudget()" style="cursor: pointer; color: #26a69a;">Create one</a>?</p>
+        <p>No budget defined for this month. <a (click)="editBudget()" class="clickable">Create one</a>?</p>
       </div>
     </div>
 
@@ -65,10 +77,21 @@
           </tbody>
         </table>
       </div>
-      <div class="card-action">
-        <a (click)="editBudget()" class="chip chip-action" style="cursor: pointer;">Edit Budget</a>
-        <a (click)="goHome()" class="chip chip-action" style="cursor: pointer;">Home</a>
-      </div>
+    </div>
+  </div>
+
+  <!-- Footer Action Bar -->
+  <div
+    class="footer-action-bar card z-depth-3 action-card"
+    [class.visible]="showFloatingActions"
+    *ngIf="!loading && !error">
+    <div class="card-action">
+      <a (click)="editBudget()" class="chip chip-action clickable">
+        <i class="material-icons left">edit</i>Edit Budget
+      </a>
+      <a (click)="goHome()" class="chip chip-action clickable">
+        <i class="material-icons left">home</i>Home
+      </a>
     </div>
   </div>
 </div>

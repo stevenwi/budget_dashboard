@@ -106,7 +106,7 @@ export class EditBudgetComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addSubcategory(category: string) {
     const newSub = this.newSubcategory[category];
-    if (!newSub.name.trim() || !newSub.amount.trim()) return;
+    if (!newSub.name.trim() || !newSub.amount || newSub.amount === '') return;
 
     if (!this.budgetData) {
       this.budgetData = {

@@ -1,5 +1,6 @@
 :host {
   display: block;
+  padding-bottom: 120px;
 }
 
 /* Material Design base styles for cards */
@@ -23,6 +24,9 @@
   border-top: 1px solid rgba(160,160,160,0.2);
   padding: 16px 24px;
   border-radius: 0 0 2px 2px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .card .card-title {
@@ -159,13 +163,21 @@
   transition: background-color .2s;
   border: none;
   border-radius: 2px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 36px;
-  line-height: 36px;
+  line-height: 1;
   padding: 0 16px;
   text-transform: uppercase;
   vertical-align: middle;
   text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-flat:hover {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .btn {
@@ -178,18 +190,34 @@
   cursor: pointer;
   border: none;
   border-radius: 2px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 36px;
-  line-height: 36px;
+  line-height: 1;
   padding: 0 16px;
   text-transform: uppercase;
   vertical-align: middle;
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .btn:hover {
   background-color: #2bbbad;
   box-shadow: 0 3px 3px 0 rgba(0,0,0,0.14), 0 1px 7px 0 rgba(0,0,0,0.12), 0 3px 1px -1px rgba(0,0,0,0.2);
+}
+
+.btn .material-icons {
+  font-size: 18px;
+}
+
+.btn.teal {
+  background-color: #26a69a;
+}
+
+.btn.teal:hover {
+  background-color: #2bbbad;
 }
 
 /* Material Icons */
@@ -211,8 +239,7 @@
 }
 
 .material-icons.left {
-  float: left;
-  margin-right: 1rem;
+  margin-right: 8px;
 }
 
 /* Center align utility */
@@ -264,10 +291,10 @@
 
 .modal-content {
   background: white;
-  border-radius: 8px;
+  border-radius: 2px;
   padding: 24px;
   width: 90%;
-  max-width: 400px;
+  max-width: 500px;
   position: relative;
   box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14), 0 9px 46px 8px rgba(0,0,0,0.12), 0 11px 15px -7px rgba(0,0,0,0.2);
 }
@@ -276,54 +303,78 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(160,160,160,0.2);
 }
 
 .modal-header h5 {
   margin: 0;
-  color: #26a69a;
+  font-size: 24px;
+  font-weight: 300;
+  color: rgba(0,0,0,0.87);
 }
 
 .close-icon {
   cursor: pointer;
-  color: #757575;
+  color: #9e9e9e;
   font-size: 24px;
+  transition: color 0.2s;
 }
 
 .close-icon:hover {
-  color: #424242;
+  color: #757575;
 }
 
 .input-field {
   position: relative;
-  margin-bottom: 24px;
-}
-
-.month-input {
-  padding: 8px 0;
-  border: none;
-  border-bottom: 1px solid #9e9e9e;
-  background: transparent;
-  font-size: 1rem;
-  width: 100%;
-  outline: none;
   margin-bottom: 8px;
 }
 
-.month-input:focus {
-  border-bottom: 2px solid #26a69a;
-}
-
 .month-label {
-  position: absolute;
-  top: -20px;
   font-size: 12px;
   color: #26a69a;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.month-input {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 2px;
+  background: #fafafa;
+  font-size: 1rem;
+  width: 100%;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.month-input:focus {
+  border-color: #26a69a;
+  background: #fff;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 12px;
   margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(160,160,160,0.2);
+}
+
+/* Footer action bar */
+.footer-action-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 12px;
+  background: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 8px 17px 2px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2);
 }
