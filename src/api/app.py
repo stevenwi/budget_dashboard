@@ -81,7 +81,7 @@ def micro_frontend_shell():
 @app.route('/api/months')
 def months():
     # Get month summaries with budget and spending totals
-    months = budget_manager.get_months()  # now ascending order
+    months = budget_manager.get_months()
     txns = load_transactions()
     month_summaries = []
     for m in months:
@@ -100,23 +100,32 @@ def months():
             'diff': diff,
             'status': status
         })
+    # Sort in descending order (newest first)
+    month_summaries.sort(key=lambda x: x['month'], reverse=True)
     return jsonify(month_summaries)
 
 
 @app.route('/api/edit_budget/<month>', methods=['GET', 'POST'])
 def api_edit_budget(month):
     if request.method == 'POST':
-        form = request.form
-        new_budget = {'Shopping':{}, 'Utilities':{}, 'Home':{}, 'Earnings':{}}
-        for key, val in form.items():
-            if key.count('__') != 1:
-                # Skip malformed keys
-                continue
-            cat, sub = key.split('__')
-            if val.strip():
-                new_budget.setdefault(cat, {})[sub] = float(val)
-        budget_manager.set_budget(month, new_budget)
-        return make_response(jsonify({'success': True}), 200)
+        # Handle JSON data from Angular
+        if request.is_json:
+            new_budget = request.get_json()
+            budget_manager.set_budget(month, new_budget)
+            return make_response(jsonify({'success': True}), 200)
+        # Handle form data (legacy)
+        else:
+            form = request.form
+            new_budget = {'Shopping':{}, 'Utilities':{}, 'Home':{}, 'Earnings':{}}
+            for key, val in form.items():
+                if key.count('__') != 1:
+                    # Skip malformed keys
+                    continue
+                cat, sub = key.split('__')
+                if val.strip():
+                    new_budget.setdefault(cat, {})[sub] = float(val)
+            budget_manager.set_budget(month, new_budget)
+            return make_response(jsonify({'success': True}), 200)
     # GET: return current budget
     budget = budget_manager.ensure_month_budget(month)
     return jsonify({'month': month, 'budget': budget})

@@ -14,16 +14,22 @@
         "Earnings": {}
     },
     "2025-07": {
-        "Shopping": {},
-        "Utilities": {
-            "water": 150.0
+        "Earnings": {
+            "pay": 123,
+            "pay 2": 1234,
+            "pay 3": 23468
         },
         "Home": {
-            "Mortgage": 1200.0,
-            "Life Insurance": 200.0
+            "life": 423634,
+            "life 2": 235
         },
-        "Earnings": {
-            "Paycheck": 10000.0
+        "Shopping": {
+            "adgf": 132523456
+        },
+        "Utilities": {
+            "nail": 123,
+            "nailed": 1234,
+            "nailed again": 5678
         }
     },
     "2025-09": {
@@ -38,15 +44,17 @@
         "Earnings": {}
     },
     "2025-10": {
-        "Shopping": {},
-        "Utilities": {
-            "water": 150.0
-        },
+        "Earnings": {},
         "Home": {
-            "Mortgage": 1200.0,
-            "Life Insurance": 200.0
+            "Life Insurance": 200,
+            "Mortgage": 1200
         },
-        "Earnings": {}
+        "Shopping": {
+            "ad": 213
+        },
+        "Utilities": {
+            "water": 150
+        }
     },
     "2025-11": {
         "Shopping": {},
@@ -118,5 +126,15 @@
             "electric": 150.0
         },
         "Earnings": {}
+    },
+    "2026-10": {
+        "Earnings": {},
+        "Home": {
+            "Life Insurance": 200,
+            "Mortgage": 1200,
+            "electric": 150
+        },
+        "Shopping": {},
+        "Utilities": {}
     }
 }

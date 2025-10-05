@@ -18,11 +18,8 @@ interface MonthItem {
 })
 export class DashboardHome {
   @State() months: MonthItem[] = [];
-  @State() currentPage: number = 1;
   @State() showModal: boolean = false;
   @State() selectedMonth: string = '';
-
-  private pageSize = 6;
 
   async componentWillLoad() {
     await this.loadMonths();
@@ -110,47 +107,19 @@ export class DashboardHome {
   }
 
 
-  get totalPages() {
-    return Math.ceil(this.months.length / this.pageSize);
-  }
-
-  get paginatedMonths() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    return this.months.slice(startIndex, startIndex + this.pageSize);
-  }
-
-  previousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
 
   render() {
     return (
       <div class="container">
         <div class="row" style={{'margin-bottom': '0'}}>
-          <div class="col s12" style={{display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', padding: '20px 0'}}>
+          <div class="col s12" style={{padding: '20px 0'}}>
             <h1 style={{margin: '0'}}>Budget Dashboard</h1>
-            <div
-              class="chip teal lighten-2 white-text chip-action"
-              style={{cursor: 'pointer', 'font-weight': '600'}}
-              onClick={() => this.openAddMonthModal()}
-            >
-              <i class="material-icons left" style={{'margin-right': '8px'}}>add</i>
-              Add New Month
-            </div>
           </div>
         </div>
 
         <div class="row">
-          {this.paginatedMonths.map(item => (
-            <div class="col s12 m6 l4">
+          {this.months.map(item => (
+            <div class="col s12">
               <div class="card z-depth-3">
                 <div class="card-content">
                   <span class="card-title" style={{display: 'flex', 'justify-content': 'space-between', 'align-items': 'center'}}>
@@ -184,23 +153,16 @@ export class DashboardHome {
           ))}
         </div>
 
-        {this.totalPages > 1 && (
-          <div class="row center-align">
-            <a class="btn-floating btn-small waves-effect waves-light"
-               style={{opacity: this.currentPage > 1 ? '1' : '0.3'}}
-               onClick={() => this.previousPage()}>
-              <i class="material-icons">chevron_left</i>
-            </a>
-            <span style={{margin: '0 1em'}}>
-              {this.totalPages > 0 ? `Page ${this.currentPage} of ${this.totalPages}` : 'No months yet'}
-            </span>
-            <a class="btn-floating btn-small waves-effect waves-light"
-               style={{opacity: this.currentPage < this.totalPages ? '1' : '0.3'}}
-               onClick={() => this.nextPage()}>
-              <i class="material-icons">chevron_right</i>
-            </a>
-          </div>
-        )}
+        <div class="footer-action-bar">
+          <button
+            type="button"
+            class="btn teal"
+            onClick={() => this.openAddMonthModal()}
+          >
+            <i class="material-icons left">add</i>
+            <span>Add New Month</span>
+          </button>
+        </div>
 
         {this.showModal && (
           <div class="modal-overlay" onClick={() => this.closeModal()}>
@@ -212,22 +174,23 @@ export class DashboardHome {
 
               <form onSubmit={(e) => this.handleAddMonth(e)}>
                 <div class="input-field">
+                  <label class="month-label">Select Month</label>
                   <input
                     type="month"
                     value={this.selectedMonth}
                     onInput={(e) => this.handleMonthChange(e)}
-                    class="browser-default month-input"
+                    class="month-input"
                     required
                   />
-                  <label class="month-label">Select Month</label>
                 </div>
 
                 <div class="modal-actions">
-                  <button type="button" class="btn-flat waves-effect waves-teal" onClick={() => this.closeModal()}>
+                  <button type="button" class="btn-flat" onClick={() => this.closeModal()}>
                     Cancel
                   </button>
-                  <button type="submit" class="btn waves-effect waves-light teal">
-                    <i class="material-icons left">add</i>Create
+                  <button type="submit" class="btn teal">
+                    <i class="material-icons left">add</i>
+                    <span>Create</span>
                   </button>
                 </div>
               </form>

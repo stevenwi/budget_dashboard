@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { BudgetService, BudgetData } from '../../services/budget';
@@ -9,11 +9,14 @@ import { BudgetService, BudgetData } from '../../services/budget';
   templateUrl: './view-budget.html',
   styleUrl: './view-budget.css'
 })
-export class ViewBudgetComponent implements OnInit {
+export class ViewBudgetComponent implements OnInit, AfterViewInit {
+  @ViewChild('headerActions') headerActions!: ElementRef;
+
   month: string = '';
   budgetData: BudgetData | null = null;
   loading = false;
   error: string | null = null;
+  showFloatingActions = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -85,5 +88,21 @@ export class ViewBudgetComponent implements OnInit {
 
   goHome() {
     this.router.navigate(['/']);
+  }
+
+  ngAfterViewInit() {
+    this.checkHeaderVisibility();
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    this.checkHeaderVisibility();
+  }
+
+  private checkHeaderVisibility() {
+    if (this.headerActions) {
+      const rect = this.headerActions.nativeElement.getBoundingClientRect();
+      this.showFloatingActions = rect.bottom < 0;
+    }
   }
 }
