@@ -1,8 +1,5 @@
-/* Import external libraries globally */
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css');
-
 /* Global styles for Stencil POC */
+/* Note: Material Icons and Materialize CSS are loaded in index.html to avoid @import issues with Shadow DOM */
 body {
   font-family: Arial, sans-serif;
   margin: 2em;

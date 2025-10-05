@@ -30,7 +30,7 @@ export class DashboardHome {
 
   async loadMonths() {
     try {
-      const response = await fetch('http://localhost:5000/api/months');
+      const response = await fetch('http://budget.local:5000/api/months');
       this.months = await response.json();
     } catch (error) {
       console.error('Failed to load months:', error);

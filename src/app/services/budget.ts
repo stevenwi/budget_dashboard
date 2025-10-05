@@ -15,7 +15,7 @@ export interface BudgetData {
   providedIn: 'root'
 })
 export class BudgetService {
-  private apiUrl = 'http://localhost:5000/api';
+  private apiUrl = 'http://budget.local:5000/api';
 
   constructor(private http: HttpClient) {}
 
