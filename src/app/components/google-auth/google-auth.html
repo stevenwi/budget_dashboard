@@ -1,0 +1,90 @@
+<div class="google-auth-container">
+  <div class="card">
+    <div class="card-content">
+      <span class="card-title">Google Drive Integration</span>
+
+      <!-- Not Authenticated State -->
+      <div *ngIf="!isAuthenticated" class="auth-section">
+        <p>Connect your Google account to access transaction data from your Google Sheets.</p>
+        <button
+          class="btn waves-effect waves-light blue"
+          (click)="login()"
+          [disabled]="isLoading">
+          <i class="material-icons left">login</i>
+          Sign in with Google
+        </button>
+      </div>
+
+      <!-- Authenticated State -->
+      <div *ngIf="isAuthenticated" class="auth-section">
+        <div class="auth-status">
+          <i class="material-icons green-text">check_circle</i>
+          <span>Connected to Google Drive</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="auth-actions">
+          <button
+            class="btn waves-effect waves-light blue"
+            (click)="loadSpreadsheets()"
+            [disabled]="isLoading">
+            <i class="material-icons left">refresh</i>
+            Load Spreadsheets
+          </button>
+          <button
+            class="btn waves-effect waves-light red"
+            (click)="logout()"
+            [disabled]="isLoading">
+            <i class="material-icons left">logout</i>
+            Sign Out
+          </button>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-section">
+          <div class="preloader-wrapper small active">
+            <div class="spinner-layer spinner-blue-only">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+          <span>Loading...</span>
+        </div>
+
+        <!-- Spreadsheets List -->
+        <div *ngIf="spreadsheets.length > 0 && !isLoading" class="spreadsheets-section">
+          <h6>Your Spreadsheets</h6>
+          <div class="collection">
+            <a
+              *ngFor="let sheet of spreadsheets"
+              class="collection-item"
+              [class.active]="sheet.id === selectedSpreadsheetId"
+              (click)="selectSpreadsheet(sheet.id)">
+              <div>
+                <span class="title">{{ sheet.name }}</span>
+                <p class="grey-text text-lighten-1">
+                  Modified: {{ sheet.modifiedTime | date:'short' }}
+                </p>
+                <a [href]="sheet.webViewLink" target="_blank" class="secondary-content" (click)="$event.stopPropagation()">
+                  <i class="material-icons">open_in_new</i>
+                </a>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="spreadsheets.length === 0 && !isLoading && isAuthenticated" class="empty-state">
+          <p class="grey-text">No spreadsheets found. Click "Load Spreadsheets" to fetch your Google Sheets.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

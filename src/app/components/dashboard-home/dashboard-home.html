@@ -1,0 +1,108 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Budget Dashboard</h1>
+  </div>
+
+  <div class="months-grid">
+    @for (item of months; track item.month) {
+      <div class="card">
+        <div class="card-content">
+          <div class="card-header">
+            <span class="card-title">{{ item.month }}</span>
+            <div class="card-chips">
+              <span class="chip chip-earnings">Earnings: ${{ item.earnings.toFixed(2) }}</span>
+              @if (item.status === 'under') {
+                <span class="chip chip-under">Under Budget</span>
+              } @else {
+                <span class="chip chip-over">Over Budget</span>
+              }
+            </div>
+          </div>
+
+          <div class="budget-stats">
+            <div class="stat-row">
+              <span><strong>Budget:</strong></span>
+              <span>${{ item.budget_total.toFixed(2) }}</span>
+            </div>
+            <div class="stat-row">
+              <span><strong>Earnings:</strong></span>
+              <span>${{ item.earnings.toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <div class="budget-calculation">
+            <span>{{ item.budget_total.toFixed(2) }}</span>
+            <i class="material-icons">remove</i>
+            <span>{{ item.spent_total.toFixed(2) }}</span>
+            <i class="material-icons">drag_handle</i>
+            <span>{{ item.diff.toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <div class="card-action">
+          <a [routerLink]="['/view-budget', item.month]" class="chip-action">
+            <i class="material-icons">visibility</i>
+            <span>View</span>
+          </a>
+          <a [routerLink]="['/edit-budget', item.month]" class="chip-action">
+            <i class="material-icons">edit</i>
+            <span>Edit</span>
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="footer-action-bar">
+    <button
+      type="button"
+      class="btn btn-purple"
+      routerLink="/presets">
+      <i class="material-icons">settings</i>
+      <span>Manage Presets</span>
+    </button>
+    <button
+      type="button"
+      class="btn btn-teal"
+      (click)="openAddMonthModal()">
+      <i class="material-icons">add</i>
+      <span>Add New Month</span>
+    </button>
+  </div>
+
+  @if (showModal) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h5>Add New Month</h5>
+          <i class="material-icons close-icon" (click)="closeModal()">close</i>
+        </div>
+
+        <form (submit)="handleAddMonth($event)">
+          <div class="input-field">
+            <label class="month-label">Select Month</label>
+            <input
+              type="month"
+              [(ngModel)]="selectedMonth"
+              name="selectedMonth"
+              class="month-input"
+              required
+            />
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-flat" (click)="closeModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-teal">
+              <i class="material-icons">add</i>
+              <span>Create</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <app-google-auth-modal></app-google-auth-modal>
+</div>
