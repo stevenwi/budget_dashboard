@@ -1,5 +1,5 @@
 # API endpoints for web components (edit/view budget)
-from flask import make_response
+from flask import make_response, session
 
 import os, json, csv, logging
 from datetime import datetime
@@ -7,12 +7,20 @@ from collections import defaultdict
 from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory
 from budget_app import BudgetManager
 from recurringmanager import RecurringManager
+from google_sheets_service import GoogleSheetsService
+from google_oauth_service import GoogleOAuthService
 
-DATA_DIR = 'data'
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 BUDGET_FILE = os.path.join(DATA_DIR, 'budgets.json')
 TXN_FILE    = os.path.join(DATA_DIR, 'transactions.csv')
 
+# Ensure data directory exists
+os.makedirs(DATA_DIR, exist_ok=True)
+
 app = Flask(__name__, static_folder='static')
+
+# Configure session for OAuth state
+app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24).hex())
 
 # Configure logging to show request details
 logging.basicConfig(
@@ -61,6 +69,18 @@ def add_header(response):
 # Initialize managers
 recurring_manager = RecurringManager(os.path.join(DATA_DIR, 'recurring.json'))
 budget_manager = BudgetManager(BUDGET_FILE, recurring_manager)
+
+# Initialize Google Sheets service (optional - only if credentials are configured)
+google_sheets_service = None
+try:
+    google_sheets_service = GoogleSheetsService()
+    if google_sheets_service.authenticate():
+        app.logger.info("Google Sheets service initialized successfully")
+except Exception as e:
+    app.logger.warning(f"Google Sheets service not available: {e}")
+
+# Initialize OAuth service
+google_oauth_service = GoogleOAuthService()
 
 def load_transactions():
     txns = []
@@ -304,12 +324,297 @@ def api_remove_preset():
     data = request.get_json()
     category = data.get('category')
     subcategory = data.get('subcategory')
-    
+
     if category and subcategory:
         recurring_manager.remove_preset(category, subcategory)
         return jsonify({'success': True})
-    
+
     return jsonify({'success': False, 'error': 'Missing required fields'})
+
+# Google Sheets Integration Endpoints
+@app.route('/api/google-sheets/sync', methods=['POST'])
+def sync_google_sheets():
+    """
+    Sync transactions from Google Sheets to local CSV
+
+    Returns:
+        JSON with sync status and count of transactions synced
+    """
+    if not google_sheets_service:
+        return jsonify({
+            'success': False,
+            'error': 'Google Sheets service not configured. Please add credentials.'
+        }), 503
+
+    try:
+        count = google_sheets_service.sync_to_csv(TXN_FILE)
+        return jsonify({
+            'success': True,
+            'transactions_synced': count,
+            'message': f'Successfully synced {count} transactions from Google Sheets'
+        })
+    except Exception as e:
+        app.logger.error(f"Error syncing Google Sheets: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/google-sheets/transactions')
+def get_google_sheets_transactions():
+    """
+    Get transactions directly from Google Sheets (without saving to CSV)
+
+    Returns:
+        JSON array of transactions
+    """
+    if not google_sheets_service:
+        return jsonify({
+            'success': False,
+            'error': 'Google Sheets service not configured'
+        }), 503
+
+    try:
+        transactions = google_sheets_service.get_transactions()
+        return jsonify({
+            'success': True,
+            'transactions': transactions,
+            'count': len(transactions)
+        })
+    except Exception as e:
+        app.logger.error(f"Error fetching Google Sheets data: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/google-sheets/monthly-summary/<month>')
+def get_google_sheets_monthly_summary(month):
+    """
+    Get monthly spending summary from Google Sheets
+
+    Args:
+        month: Month in YYYY-MM format
+
+    Returns:
+        JSON with spending summary by category
+    """
+    if not google_sheets_service:
+        return jsonify({
+            'success': False,
+            'error': 'Google Sheets service not configured'
+        }), 503
+
+    try:
+        summary = google_sheets_service.get_monthly_summary(month)
+        return jsonify({
+            'success': True,
+            'month': month,
+            'summary': summary
+        })
+    except Exception as e:
+        app.logger.error(f"Error fetching monthly summary: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/google-sheets/status')
+def google_sheets_status():
+    """
+    Check Google Sheets integration status
+
+    Returns:
+        JSON with status information
+    """
+    if not google_sheets_service:
+        return jsonify({
+            'configured': False,
+            'authenticated': False,
+            'message': 'Google Sheets service not configured. Add credentials to enable.'
+        })
+
+    try:
+        # Check if we can authenticate (already done on startup, but verify)
+        is_authenticated = google_sheets_service.service is not None
+
+        spreadsheet_id = google_sheets_service.spreadsheet_id or 'Not configured'
+
+        return jsonify({
+            'configured': True,
+            'authenticated': is_authenticated,
+            'spreadsheet_id': spreadsheet_id,
+            'message': 'Google Sheets integration is active' if is_authenticated else 'Authentication failed'
+        })
+    except Exception as e:
+        return jsonify({
+            'configured': True,
+            'authenticated': False,
+            'error': str(e)
+        })
+
+# OAuth2 Endpoints for Personal Google Account
+@app.route('/api/oauth/login')
+def oauth_login():
+    """
+    Initiate OAuth2 login flow
+
+    Redirects user to Google authorization page
+    """
+    try:
+        redirect_uri = f"http://{request.host}/api/oauth/callback"
+
+        auth_url, state, code_verifier = google_oauth_service.get_authorization_url(redirect_uri)
+
+        # Store state and code_verifier in session for verification
+        session['oauth_state'] = state
+        session['code_verifier'] = code_verifier
+
+        return redirect(auth_url)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/oauth/callback')
+def oauth_callback():
+    """
+    OAuth2 callback endpoint
+
+    Handles the redirect from Google after user authorization
+    """
+    try:
+        # Verify state to prevent CSRF
+        state = request.args.get('state')
+        if state != session.get('oauth_state'):
+            return jsonify({'error': 'Invalid state parameter'}), 400
+
+        # Get authorization code
+        code = request.args.get('code')
+        if not code:
+            error = request.args.get('error')
+            return jsonify({'error': f'Authorization failed: {error}'}), 400
+
+        # Exchange code for tokens
+        code_verifier = session.get('code_verifier')
+        redirect_uri = f"http://{request.host}/api/oauth/callback"
+
+        credentials = google_oauth_service.exchange_code_for_token(
+            code=code,
+            code_verifier=code_verifier,
+            redirect_uri=redirect_uri
+        )
+
+        # Clear session data
+        session.pop('oauth_state', None)
+        session.pop('code_verifier', None)
+
+        # Redirect to success page or dashboard
+        return redirect('http://budget.local:4200/?oauth=success')
+
+    except Exception as e:
+        app.logger.error(f"OAuth callback error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/oauth/status')
+def oauth_status():
+    """
+    Check OAuth authentication status
+
+    Returns:
+        JSON with authentication status
+    """
+    is_authenticated = google_oauth_service.is_authenticated()
+
+    return jsonify({
+        'authenticated': is_authenticated,
+        'message': 'User is authenticated with Google' if is_authenticated else 'Not authenticated'
+    })
+
+@app.route('/api/oauth/logout', methods=['POST'])
+def oauth_logout():
+    """
+    Logout and clear saved credentials
+
+    Returns:
+        JSON with logout status
+    """
+    try:
+        google_oauth_service.logout()
+        return jsonify({
+            'success': True,
+            'message': 'Logged out successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/oauth/spreadsheets')
+def oauth_list_spreadsheets():
+    """
+    List all Google Sheets in user's Drive
+
+    Requires OAuth authentication
+
+    Returns:
+        JSON with list of spreadsheets
+    """
+    if not google_oauth_service.is_authenticated():
+        return jsonify({
+            'error': 'Not authenticated. Please login first.',
+            'login_url': '/api/oauth/login'
+        }), 401
+
+    try:
+        spreadsheets = google_oauth_service.list_spreadsheets()
+
+        return jsonify({
+            'success': True,
+            'count': len(spreadsheets),
+            'spreadsheets': spreadsheets
+        })
+
+    except Exception as e:
+        app.logger.error(f"Error listing spreadsheets: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/oauth/spreadsheet/<spreadsheet_id>/transactions')
+def oauth_get_transactions(spreadsheet_id):
+    """
+    Get transactions from a specific spreadsheet (OAuth)
+
+    Args:
+        spreadsheet_id: The Google Sheets ID
+
+    Returns:
+        JSON with transactions
+    """
+    if not google_oauth_service.is_authenticated():
+        return jsonify({
+            'error': 'Not authenticated. Please login first.',
+            'login_url': '/api/oauth/login'
+        }), 401
+
+    try:
+        transactions = google_oauth_service.get_transactions(spreadsheet_id)
+
+        return jsonify({
+            'success': True,
+            'spreadsheet_id': spreadsheet_id,
+            'count': len(transactions),
+            'transactions': transactions
+        })
+
+    except Exception as e:
+        app.logger.error(f"Error getting transactions: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 if __name__ == '__main__':
     os.makedirs(DATA_DIR, exist_ok=True)

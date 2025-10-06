@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:api": "cd src/api && python3 app.py",
+    "start:api": "python3 src/api/app.py",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

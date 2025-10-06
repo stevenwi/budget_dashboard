@@ -1,0 +1,31 @@
+<!-- Icon Button in Action Section -->
+<div class="google-auth-icon-container">
+  <button
+    *ngIf="!isAuthenticated"
+    class="btn-floating btn-large waves-effect waves-light blue"
+    (click)="openModal()"
+    title="Connect Google Drive">
+    <i class="material-icons">cloud_off</i>
+  </button>
+
+  <button
+    *ngIf="isAuthenticated"
+    class="btn-floating btn-large waves-effect waves-light green"
+    (click)="openModal()"
+    title="Google Drive Connected">
+    <i class="material-icons">cloud_done</i>
+  </button>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Google Drive Integration</h5>
+      <i class="material-icons close-icon" (click)="closeModal()">close</i>
+    </div>
+    <div class="modal-body">
+      <app-google-auth></app-google-auth>
+    </div>
+  </div>
+</div>

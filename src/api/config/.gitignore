@@ -1,0 +1,10 @@
+# Ignore Google credentials - NEVER commit these files
+google_credentials.json
+oauth_client_secrets.json
+oauth_token.json
+*.json
+
+# Allow example files
+!google_credentials.example.json
+!oauth_client_secrets.example.json
+!.gitignore

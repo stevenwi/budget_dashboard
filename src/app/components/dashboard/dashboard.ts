@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { DashboardHomeComponent } from '../dashboard-home/dashboard-home';
 
 @Component({
   selector: 'app-dashboard',
-  template: '<dashboard-home></dashboard-home>',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  standalone: true
+  template: `<app-dashboard-home></app-dashboard-home>`,
+  standalone: true,
+  imports: [DashboardHomeComponent]
 })
 export class DashboardComponent {
 }
