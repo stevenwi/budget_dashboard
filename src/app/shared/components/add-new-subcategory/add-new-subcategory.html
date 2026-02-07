@@ -1,0 +1,59 @@
+<div class="section-header">
+  <h5>{{ title }}</h5>
+  <div class="section-header-action">
+    <app-action-button
+      type="button"
+      icon="add"
+      text="Add"
+      color="teal"
+      [disabled]="buttonDisabled || !isFormValid"
+      (clicked)="onAdd()">
+    </app-action-button>
+  </div>
+</div>
+<div class="row add-subcategory-row">
+  <div *ngIf="showCategorySelect" class="col s12 m4">
+    <div class="input-field">
+      <label>Category</label>
+      <select
+        [(ngModel)]="formData.category"
+        name="category"
+        class="browser-default"
+        required>
+        <option value="" disabled selected>Choose category</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="col s12" [class.m4]="showCategorySelect" [class.m6]="!showCategorySelect">
+    <div class="input-field">
+      <label>Subcategory Name</label>
+      <input
+        type="text"
+        [(ngModel)]="formData.subcategory"
+        name="subcategory"
+        [placeholder]="showCategorySelect ? 'e.g. Groceries, Electric' : ''"
+        (input)="onInputChange($event)"
+        (blur)="onInputChange($event)"
+        [class.has-value]="formData.subcategory && formData.subcategory.trim().length > 0"
+        required
+      />
+    </div>
+  </div>
+  <div class="col s12" [class.m4]="showCategorySelect" [class.m6]="!showCategorySelect">
+    <div class="input-field">
+      <label>Amount ($)</label>
+      <input
+        type="number"
+        step="0.01"
+        [(ngModel)]="formData.amount"
+        name="amount"
+        [placeholder]="showCategorySelect ? '0.00' : ''"
+        (input)="onInputChange($event)"
+        (blur)="onInputChange($event)"
+        [class.has-value]="formData.amount && formData.amount.toString().length > 0"
+        required
+      />
+    </div>
+  </div>
+</div>

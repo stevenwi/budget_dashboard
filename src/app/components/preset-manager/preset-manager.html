@@ -1,0 +1,70 @@
+<div class="container">
+  <app-page-header
+    title="Manage Budget Presets"
+    badgeText="Recurring Templates"
+    badgeColor="purple"
+    [actions]="pageHeaderActions">
+  </app-page-header>
+
+  <div *ngIf="loading" class="card z-depth-3">
+    <div class="card-content">Loading presets...</div>
+  </div>
+
+  <div *ngIf="error" class="card red lighten-4 z-depth-3">
+    <div class="card-content">
+      <span class="red-text">{{ error }}</span>
+    </div>
+  </div>
+
+  <!-- Add New Preset Card -->
+  <div *ngIf="!loading && !error" class="card z-depth-3">
+    <div class="card-content">
+      <app-add-new-subcategory
+        title="Add New Preset"
+        [showCategorySelect]="true"
+        [categories]="categories"
+        [formData]="newPreset"
+        (addClicked)="addPreset()">
+      </app-add-new-subcategory>
+    </div>
+  </div>
+
+  <!-- Presets List -->
+  <div *ngIf="!loading && !error && presets.length > 0" class="card z-depth-3">
+    <div class="card-content">
+      <h5>Current Presets</h5>
+      <table class="preset-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Subcategory</th>
+            <th>Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let preset of presets">
+            <td>{{ preset.category }}</td>
+            <td>{{ preset.subcategory }}</td>
+            <td>${{ preset.amount.toFixed(2) }}</td>
+            <td>
+              <button
+                type="button"
+                class="btn-icon btn-danger"
+                (click)="removePreset(preset)"
+                title="Remove preset">
+                <i class="material-icons">delete</i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && presets.length === 0" class="card z-depth-3">
+    <div class="card-content">
+      <p class="empty-state">No presets defined yet. Add your first preset above!</p>
+    </div>
+  </div>
+</div>

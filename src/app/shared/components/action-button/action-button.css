@@ -1,0 +1,11 @@
+@import '../../material-design.css';
+
+/* Ensure consistent button sizing */
+:host {
+  display: inline-block;
+}
+
+.btn {
+  width: 100%;
+  min-width: 64px;
+}

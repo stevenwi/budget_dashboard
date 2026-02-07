@@ -1,0 +1,32 @@
+<div class="row header-row">
+  <div class="col s12 header-col">
+    <h1 class="header-title">{{ title }}</h1>
+    <div
+      class="chip white-text header-badge"
+      [class.chip-teal]="badgeColor === 'teal'"
+      [class.chip-purple]="badgeColor === 'purple'">
+      {{ badgeText }}
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showActionsCard && actions.length > 0" class="card z-depth-3 action-card">
+  <div class="card-action">
+    @for (action of actions; track action.label) {
+      @if (action.type === 'chip') {
+        <a (click)="action.action()" class="chip chip-action clickable">
+          <i *ngIf="action.icon" class="material-icons left">{{ action.icon }}</i>{{ action.label }}
+        </a>
+      } @else {
+        <button
+          type="button"
+          [class]="'btn btn-' + action.color"
+          (click)="action.action()"
+          [disabled]="action.disabled">
+          <i *ngIf="action.icon" class="material-icons left">{{ action.icon }}</i>
+          {{ (action.loading && action.loadingText) ? action.loadingText : action.label }}
+        </button>
+      }
+    }
+  </div>
+</div>

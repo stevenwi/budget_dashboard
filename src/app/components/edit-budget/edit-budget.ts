@@ -3,10 +3,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BudgetService, BudgetData } from '../../services/budget';
+import { AddNewSubcategoryComponent } from '../../shared/components/add-new-subcategory/add-new-subcategory';
+import { PageHeaderComponent, HeaderAction } from '../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-edit-budget',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AddNewSubcategoryComponent, PageHeaderComponent],
   templateUrl: './edit-budget.html',
   styleUrl: './edit-budget.css'
 })
@@ -23,11 +25,14 @@ export class EditBudgetComponent implements OnInit, AfterViewInit, OnDestroy {
   expandedCategories: Record<string, boolean> = {};
 
   // For adding new subcategories
-  newSubcategory: Record<string, { name: string; amount: string }> = {};
+  newSubcategory: Record<string, { subcategory: string; amount: string }> = {};
 
   // For floating action bar
-  @ViewChild('headerActions', { static: false }) headerActions!: ElementRef;
+  @ViewChild('headerActionsElement', { static: false }) headerActionsElement!: ElementRef;
   showFloatingActions = false;
+
+  // Header actions
+  pageHeaderActions: HeaderAction[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -37,7 +42,7 @@ export class EditBudgetComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     // Initialize new subcategory objects and expanded state
     this.categories.forEach(cat => {
-      this.newSubcategory[cat] = { name: '', amount: '' };
+      this.newSubcategory[cat] = { subcategory: '', amount: '' };
       this.expandedCategories[cat] = false;
     });
   }
@@ -49,6 +54,26 @@ export class EditBudgetComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadBudgetData();
       }
     });
+
+    // Initialize header actions
+    this.pageHeaderActions = [
+      {
+        label: 'Save Budget',
+        icon: 'save',
+        color: 'purple',
+        disabled: false,
+        loading: false,
+        loadingText: 'Saving...',
+        action: () => this.saveBudget()
+      },
+      {
+        label: 'Home',
+        icon: 'home',
+        color: 'teal',
+        type: 'chip',
+        action: () => this.goHome()
+      }
+    ];
   }
 
   ngAfterViewInit() {
@@ -67,11 +92,16 @@ export class EditBudgetComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private checkFloatingActionVisibility() {
-    if (this.headerActions) {
-      const headerActionsRect = this.headerActions.nativeElement.getBoundingClientRect();
+    if (this.headerActionsElement) {
+      const headerActionsRect = this.headerActionsElement.nativeElement.getBoundingClientRect();
       const isHeaderActionsVisible = headerActionsRect.bottom > 0;
       this.showFloatingActions = !isHeaderActionsVisible;
     }
+  }
+
+  updateHeaderActions() {
+    this.pageHeaderActions[0].disabled = this.saving;
+    this.pageHeaderActions[0].loading = this.saving;
   }
 
   loadBudgetData() {
@@ -106,7 +136,7 @@ export class EditBudgetComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addSubcategory(category: string) {
     const newSub = this.newSubcategory[category];
-    if (!newSub.name.trim() || !newSub.amount || newSub.amount === '') return;
+    if (!newSub.subcategory.trim() || !newSub.amount || newSub.amount === '') return;
 
     if (!this.budgetData) {
       this.budgetData = {
@@ -123,10 +153,10 @@ export class EditBudgetComponent implements OnInit, AfterViewInit, OnDestroy {
       this.budgetData.budget[category] = {};
     }
 
-    this.budgetData.budget[category][newSub.name.trim()] = parseFloat(newSub.amount);
+    this.budgetData.budget[category][newSub.subcategory.trim()] = parseFloat(newSub.amount);
 
     // Clear the input fields
-    this.newSubcategory[category] = { name: '', amount: '' };
+    this.newSubcategory[category] = { subcategory: '', amount: '' };
 
     // Update input classes after clearing
     setTimeout(() => {
@@ -177,15 +207,18 @@ export class EditBudgetComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.saving = true;
     this.error = null;
+    this.updateHeaderActions();
 
     this.budgetService.saveBudget(this.month, this.budgetData.budget).subscribe({
       next: () => {
         this.saving = false;
+        this.updateHeaderActions();
         this.router.navigate(['/view-budget', this.month]);
       },
       error: (err) => {
         this.error = 'Failed to save budget';
         this.saving = false;
+        this.updateHeaderActions();
         console.error('Error saving budget:', err);
       }
     });

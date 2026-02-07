@@ -90,15 +90,32 @@
   margin-bottom: 2rem;
 }
 
+/* Section header with action button */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header h5 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.section-header-action {
+  min-width: 120px;
+}
+
+.section-header-action app-action-button {
+  width: 100%;
+}
+
 /* Add subcategory form */
 .add-subcategory-row {
   align-items: flex-end;
-}
-
-.add-btn-col {
-  display: flex;
-  align-items: flex-end;
-  padding-bottom: 16px;
 }
 
 /* Clickable action items */
@@ -266,6 +283,13 @@ table td .remove-btn {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
+}
+
+/* Responsive design for medium screens and up */
+@media (min-width: 769px) {
+  .col.m6 {
+    width: 50%;
+  }
 }
 
 /* Responsive design for smaller screens */
