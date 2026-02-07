@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface MonthItem {
   month: string;
@@ -46,8 +46,8 @@ export class BudgetService {
     return this.http.post(`${this.apiUrl}/edit_budget/${month}`, budget);
   }
 
-  getPresets(): Observable<PresetData> {
-    return this.http.get<PresetData>(`${this.apiUrl}/presets`);
+  getPresets(): Observable<{presets: PresetData}> {
+    return this.http.get<{presets: PresetData}>(`${this.apiUrl}/presets`);
   }
 
   addPreset(category: string, subcategory: string, amount: number): Observable<any> {

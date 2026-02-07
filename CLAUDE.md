@@ -19,12 +19,13 @@ npm run start:api
 - Provides API endpoints for the Angular/Stencil components
 - Creates `src/api/data/` directory and `budgets.json` if they don't exist
 
-### Building Stencil Components
+### Building Stencil Components (WittaNet Components)
 ```bash
-cd poc && npm run build
+cd ../wittanet-components/poc && npm run build
 ```
-- Builds the Stencil web components library
+- Builds the Stencil web components library in the external wittanet-components repository
 - Required before running Angular app if components are modified
+- Components are located in a separate repository at `../wittanet-components/`
 
 ### Dependencies
 ```bash
@@ -46,9 +47,10 @@ This is an **Angular budget dashboard** that integrates with Stencil web compone
 - **`src/app/`** - Angular application components
 - **`src/main.ts`** - Angular bootstrap file
 - **`src/index.html`** - Main HTML entry point
-- **`poc/src/components/`** - Stencil web components:
-  - `dashboard-home.tsx` - Main dashboard view
-  - Other reusable components for budget management
+- **`../wittanet-components/poc/src/components/`** - Stencil web components (external repo):
+  - `dashboard-home.tsx` - Main dashboard view (legacy, duplicated in Angular)
+  - `preset-manager.tsx` - Preset management component
+  - Note: Stencil components are maintained separately for framework-agnostic reusability
 
 #### Backend (Flask API)
 - **`src/api/app.py`** - Main Flask application with API endpoints
@@ -107,8 +109,12 @@ The system uses four fixed categories:
 
 ### File Organization
 ```
+budget_dashboard/             # This repository
 ├── src/                      # Main source directory
 │   ├── app/                  # Angular application
+│   │   ├── components/       # Angular components (dashboard-home, edit-budget, view-budget, etc.)
+│   │   ├── services/         # Angular services (BudgetService, GoogleOAuthService)
+│   │   └── shared/           # Shared utilities and styles
 │   ├── api/                  # Flask API backend
 │   │   ├── app.py           # Main Flask application
 │   │   ├── budget_app.py    # Core business logic
@@ -117,12 +123,22 @@ The system uses four fixed categories:
 │   ├── index.html           # Angular main HTML
 │   ├── main.ts              # Angular bootstrap
 │   └── styles.css           # Global styles
-├── poc/                     # Stencil components library
-│   └── src/components/      # Reusable web components
 ├── deprecated/              # Original micro-frontend files
-├── package.json             # Angular dependencies & scripts
+├── package.json             # Angular dependencies & scripts (references wittanet-components)
 ├── angular.json             # Angular CLI configuration
-└── tsconfig.*.json          # TypeScript configurations
+├── tsconfig.*.json          # TypeScript configurations
+└── REFACTORING_PLAN.md      # Plan for consolidating Angular/Stencil components
+
+../wittanet-components/       # External Stencil components repository
+├── poc/                      # StencilJS project root
+│   ├── src/components/       # Framework-agnostic web components
+│   │   ├── dashboard-home.tsx   # Dashboard component (legacy)
+│   │   └── preset-manager.tsx   # Preset manager component
+│   ├── package.json          # Stencil package (name: wittanet-components)
+│   ├── stencil.config.ts     # Stencil build configuration
+│   └── dist/                 # Built components (generated)
+├── README.md                 # WittaNet components documentation
+└── .git/                     # Separate git repository
 ```
 
 ### Cache Management

@@ -6,7 +6,26 @@
             "Mortgage": 1200,
             "electric": 150
         },
-        "Shopping": {},
+        "Shopping": {
+            "target": 100,
+            "test": 1,
+            "test2": 2,
+            "test3": 3
+        },
         "Utilities": {}
+    },
+    "2026-02": {
+        "Earnings": {
+            "UKG": 8000
+        },
+        "Home": {
+            "Life Insurance": 200,
+            "Mortgage": 1200,
+            "electric": 150
+        },
+        "Shopping": {},
+        "Utilities": {
+            "water": 100
+        }
     }
 }

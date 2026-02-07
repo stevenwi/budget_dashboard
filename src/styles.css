@@ -1,1 +1,92 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Override Materialize CSS for Angular components */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Fix input styling issues caused by Materialize CSS */
+input[type="text"]:not(.browser-default),
+input[type="number"]:not(.browser-default),
+input[type="month"]:not(.browser-default),
+input[type="date"]:not(.browser-default) {
+  height: auto !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  padding: 12px !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  background-color: #fafafa !important;
+  transition: all 0.2s !important;
+}
+
+input[type="text"]:not(.browser-default):focus,
+input[type="number"]:not(.browser-default):focus,
+input[type="month"]:not(.browser-default):focus,
+input[type="date"]:not(.browser-default):focus {
+  border-color: #26a69a !important;
+  background-color: white !important;
+  box-shadow: none !important;
+}
+
+/* Fix label styling - ensure labels appear above inputs */
+/* Only override labels that need fixing (not custom styled ones) */
+.input-field label:not(.month-label) {
+  position: static !important;
+  transform: none !important;
+  font-size: 12px !important;
+  color: #26a69a !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+  font-weight: 500 !important;
+}
+
+/* Preserve month-label specific styling */
+.month-label {
+  position: static !important;
+  transform: none !important;
+  display: block !important;
+}
+
+label.active {
+  transform: none !important;
+}
+
+/* Ensure input-field structure works correctly */
+.input-field {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.input-field label {
+  order: -1 !important; /* Force label to appear first/above */
+}
+
+/* Reset button styles */
+button, .btn {
+  outline: none;
+  border: none;
+}
+
+/* Ensure Material Icons load correctly */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}

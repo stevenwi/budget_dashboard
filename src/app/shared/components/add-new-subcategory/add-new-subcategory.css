@@ -1,0 +1,103 @@
+/* Section header with action button */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h5 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.section-header-action {
+  min-width: 120px;
+}
+
+.section-header-action app-action-button {
+  width: 100%;
+}
+
+/* Row and column styles */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+}
+
+.col {
+  padding: 0 0.75rem;
+}
+
+.col.s12 {
+  width: 100%;
+}
+
+.add-subcategory-row {
+  margin-bottom: 0;
+  align-items: flex-end;
+}
+
+/* Override global input-field flex to work in grid layout */
+.add-subcategory-row .input-field {
+  margin-bottom: 1rem;
+  position: relative;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.add-subcategory-row .input-field label {
+  order: -1 !important;
+  display: block;
+  font-size: 12px;
+  color: #26a69a;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.input-field input,
+.input-field select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 1rem;
+  background: #fafafa;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.input-field input:focus,
+.input-field select:focus {
+  outline: none;
+  border-color: #26a69a;
+  background: white;
+}
+
+select.browser-default {
+  height: auto;
+  border: 1px solid #e0e0e0;
+}
+
+/* Responsive design for medium screens and up */
+@media (min-width: 769px) {
+  .col.m4 {
+    width: 33.33%;
+  }
+
+  .col.m6 {
+    width: 50%;
+  }
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .col.m4,
+  .col.m6 {
+    width: 100%;
+  }
+}

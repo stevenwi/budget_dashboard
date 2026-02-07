@@ -1,0 +1,160 @@
+/* Header row styling */
+.header-row {
+  margin-bottom: 0;
+  align-items: center;
+}
+
+.header-col {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  min-height: auto;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-title {
+  margin: 0;
+  line-height: 1.2;
+  font-size: 2rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.header-badge {
+  padding: 0 12px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 16px;
+}
+
+.chip-teal {
+  background-color: #26a69a;
+}
+
+.chip-purple {
+  background-color: #9c27b0;
+}
+
+/* Action Cards - constrain width to content */
+.action-card {
+  max-width: fit-content;
+  margin-bottom: 1.5rem;
+}
+
+.action-card .card-action {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: none;
+}
+
+/* Button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+}
+
+.btn:hover:not(:disabled) {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-teal {
+  background-color: #26a69a;
+}
+
+.btn-teal:hover:not(:disabled) {
+  background-color: #2bbbad;
+}
+
+.btn-purple {
+  background-color: #9c27b0;
+}
+
+.btn-purple:hover:not(:disabled) {
+  background-color: #ab47bc;
+}
+
+.btn .material-icons {
+  font-size: 18px;
+}
+
+.btn .material-icons.left {
+  margin-right: 4px;
+}
+
+/* Chip action styles */
+.chip-action {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 32px;
+  font-size: 13px;
+  background-color: #e0e0e0;
+  border-radius: 16px;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.87);
+  transition: background-color 0.2s;
+}
+
+.chip-action:hover {
+  background-color: #d0d0d0;
+}
+
+.chip-action .material-icons {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .header-col {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .header-title {
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .action-card .card-action {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .action-card .card-action .btn,
+  .action-card .card-action .chip-action {
+    width: 100%;
+    justify-content: center;
+  }
+}
